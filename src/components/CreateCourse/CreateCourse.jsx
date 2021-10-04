@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 function CreateCourse(props) {
-	const [clone, setClone] = useState(props.authorsList);
+	const { authorsList, AddCourse, showCB, updateAuthor, filterTime } = props;
+
+	const [clone, setClone] = useState(authorsList);
 	const [localAuthor, setLocalAuthor] = useState({ id: '', name: '' });
 	const [info, setInfo] = useState({
 		title: '',
@@ -19,19 +21,19 @@ function CreateCourse(props) {
 			authorCourse.length > 0 &&
 			clone[0].name
 		) {
-			props.add({
+			AddCourse({
 				id: uuidv4(),
 				...info,
 				creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
 				authors: authorCourse.map((item) => item.id),
 			});
-			props.showBack(true);
+			showCB(true);
 		} else {
 			alert('Please enter all fields');
 		}
 	};
 	// Add author
-	const handlerAuthor = (event) => {
+	const createAuthor = (event) => {
 		setLocalAuthor({
 			id: uuidv4(),
 			name: event.target.value,
@@ -46,16 +48,16 @@ function CreateCourse(props) {
 				throw error;
 			}
 		});
-		props.authorsAdd(localAuthor);
+		updateAuthor(localAuthor);
 		setClone([...clone, localAuthor]);
 		setLocalAuthor({ name: '', id: '' });
 	};
-	const handlerChange = (event) => {
+	const handlerInfo = (event) => {
 		const name = event.target.name;
 		const value = event.target.value;
 		setInfo({ ...info, [name]: value });
 	};
-	const handlerAdAt = (value) => {
+	const approveAuthor = (value) => {
 		const newList = clone.filter((item) => {
 			if (value === item.id) {
 				setAuthorCourse([...authorCourse, item]);
@@ -64,7 +66,7 @@ function CreateCourse(props) {
 		});
 		setClone(newList);
 	};
-	const handlerDelete = (value) => {
+	const unApproveAuthor = (value) => {
 		const newList = authorCourse.filter((item) => {
 			value === item.id && setClone([...clone, item]);
 			return value !== item.id;
@@ -82,7 +84,7 @@ function CreateCourse(props) {
 							id='title'
 							name='title'
 							velue={info.title}
-							onChange={handlerChange}
+							onChange={handlerInfo}
 							placeholder='Enter title...'
 						/>
 					</div>
@@ -97,7 +99,7 @@ function CreateCourse(props) {
 						<label htmlFor='description'>Description:</label>
 						<textarea
 							id='description'
-							onChange={handlerChange}
+							onChange={handlerInfo}
 							name='description'
 						></textarea>
 					</div>
@@ -111,7 +113,7 @@ function CreateCourse(props) {
 								type='text'
 								id='addAuthor'
 								value={localAuthor.name}
-								onChange={handlerAuthor}
+								onChange={createAuthor}
 								placeholder='Enter author name...'
 							/>
 							<button type='button' className='btn' onClick={AddAuthorTo}>
@@ -130,7 +132,7 @@ function CreateCourse(props) {
 												<p>{author.name}</p>
 												<button
 													type='button'
-													onClick={() => handlerAdAt(author.id)}
+													onClick={() => approveAuthor(author.id)}
 												>
 													Add author
 												</button>
@@ -154,14 +156,12 @@ function CreateCourse(props) {
 								type='number'
 								id='duration'
 								name='duration'
-								onChange={handlerChange}
+								onChange={handlerInfo}
 								placeholder='Enter duration in minutes...'
 							/>
 							<p>
 								Duration:
-								{info.duration > 0
-									? props.changeTime(info.duration)
-									: ` 00:00 `}
+								{info.duration > 0 ? filterTime(info.duration) : ` 00:00 `}
 								hours
 							</p>
 						</div>
@@ -177,7 +177,7 @@ function CreateCourse(props) {
 												<p>{item.name}</p>
 												<button
 													type='button'
-													onClick={() => handlerDelete(item.id)}
+													onClick={() => unApproveAuthor(item.id)}
 												>
 													Delete author
 												</button>

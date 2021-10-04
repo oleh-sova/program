@@ -74,21 +74,18 @@ const time = (m) => {
 
 function App() {
 	const [show, setShow] = useState(true);
-	const [list, setList] = useState(mockedCoursesList);
+	const [coursesList, setCoursesList] = useState(mockedCoursesList);
 	const [authorsList, setAuthorsList] = useState(mockedAuthorsList);
 
-	const addNew = (value) => {
-		setList([...list, value]);
+	const AddCourse = (value) => {
+		setCoursesList([...coursesList, value]);
 	};
 
 	const updateAuthor = (value) => {
 		setAuthorsList([...authorsList, value]);
 	};
 
-	const cleanList = (value) => {
-		setAuthorsList([...value]);
-	};
-	const showBack = (value) => {
+	const showCB = (value) => {
 		setShow(value);
 	};
 
@@ -97,19 +94,18 @@ function App() {
 			<Header />
 			{show ? (
 				<Courses
-					infoCourses={list}
+					infoCourses={coursesList}
 					infoAuthor={authorsList}
-					showBack={showBack}
-					changeTime={time}
+					showCB={showCB}
+					filterTime={time}
 				/>
 			) : (
 				<CreateCourse
-					showBack={showBack}
-					add={addNew}
+					showCB={showCB}
+					AddCourse={AddCourse}
 					authorsList={authorsList}
-					authorsAdd={updateAuthor}
-					cleanList={cleanList}
-					changeTime={time}
+					updateAuthor={updateAuthor}
+					filterTime={time}
 				/>
 			)}
 		</div>

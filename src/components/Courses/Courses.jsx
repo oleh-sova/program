@@ -3,33 +3,50 @@ import Search from '../Search/Search';
 import { useState } from 'react';
 
 function Courses(props) {
-	const [build, setBuild] = useState(props.infoCourses);
+	const { infoCourses, infoAuthor, showCB, filterTime } = props;
+	const [courses, setCourses] = useState(infoCourses);
 
-	const returnBuild = (value) => {
-		setBuild(value);
+	const searchCB = (value) => {
+		const searchString = value.trim().toLowerCase();
+
+		let filterCourses = infoCourses.filter((item) => {
+			return (
+				item.title.toLowerCase().match(searchString) ||
+				item.id.toLowerCase().match(searchString)
+			);
+		});
+		if (value) {
+			setCourses(filterCourses);
+		} else {
+			setCourses(infoCourses);
+		}
 	};
 	return (
 		<section className='courses'>
 			<div className='row'>
 				<div className='columns large-10'>
-					<Search infoCourses={props.infoCourses} returnBuild={returnBuild} />
+					<Search searchCB={searchCB} />
 				</div>
 				<div className='columns large-2'>
-					<button className='btn' onClick={() => props.showBack(false)}>
+					<button className='btn' onClick={() => showCB(false)}>
 						Add new course
 					</button>
 				</div>
 			</div>
-			{build.map((item) => {
-				return (
-					<CourseCard
-						key={item.id}
-						value={item}
-						infoAuth={props.infoAuthor}
-						changeTime={props.changeTime}
-					/>
-				);
-			})}
+			{courses.length >= 1 ? (
+				courses.map((item) => {
+					return (
+						<CourseCard
+							key={item.id}
+							value={item}
+							infoAuthor={infoAuthor}
+							filterTime={filterTime}
+						/>
+					);
+				})
+			) : (
+				<div className='empty'> Matches not found, sorry</div>
+			)}
 		</section>
 	);
 }

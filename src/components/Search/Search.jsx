@@ -1,36 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useRef } from 'react';
 
 function Search(props) {
-	const [value, setValue] = useState('');
+	const { searchCB } = props;
+	const valueInput = useRef(null);
 
-	useEffect(() => {
-		const searchString = value.trim().toLowerCase();
-		let arr = props.infoCourses.filter((item) => {
-			return (
-				item.title.toLowerCase().match(searchString) ||
-				item.id.toLowerCase().match(searchString)
-			);
-		});
-		props.returnBuild(arr);
-	}, [value]);
-
-	const handleSubmit = (event) => {
+	const handlerSubmit = (event) => {
 		event.preventDefault();
-		value.length < 1 && alert('Empty value, please enter something');
-		props.infoCourses.length < 1 &&
-			alert("Sorry, but i don't have anything for you:(");
+		!valueInput.current.value && alert('Please, enter something for the query');
 	};
-	const handleInput = (event) => {
-		setValue(event.target.value);
+	const handlerInput = (event) => {
+		searchCB(event.target.value);
 	};
 
 	return (
 		<div className='search'>
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={handlerSubmit}>
 				<input
 					type='text'
-					value={value}
-					onChange={handleInput}
+					ref={valueInput}
+					onChange={handlerInput}
 					placeholder='Enter course name or id...'
 				/>
 				<button type='submit'>Search</button>
