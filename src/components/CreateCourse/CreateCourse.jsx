@@ -43,7 +43,9 @@ function CreateCourse(props) {
 	const AddAuthorTo = () => {
 		const error = "Pay attention, such user's name already existing";
 		clone.forEach((item) => {
-			if (item.name.includes(localAuthor.name)) {
+			console.log(item.name.match(localAuthor.name), 'clone');
+
+			if (item.name === localAuthor.name) {
 				alert(error);
 				throw error;
 			}
