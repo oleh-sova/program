@@ -1,7 +1,16 @@
 import Logo from '../Logo/Logo';
-import Button from '../Button/Button';
+import Button from '../UI/Button/Button';
+import { useHistory } from 'react-router-dom';
 
-function Header() {
+function Header({ userName, updateUserName }) {
+	const router = useHistory();
+
+	const handlerLogout = () => {
+		updateUserName('');
+		localStorage.removeItem('UserToken');
+		router.push('/login');
+	};
+
 	return (
 		<>
 			<header className='header'>
@@ -11,8 +20,15 @@ function Header() {
 					</div>
 					<div className='columns shrink'>
 						<div className='navigation'>
-							<span>Oleh</span>
-							<Button buttonName='Logout' />
+							<span>{userName}</span>
+							{userName ? (
+								<Button type='button' onClick={handlerLogout}>
+									{' '}
+									Logout{' '}
+								</Button>
+							) : (
+								false
+							)}
 						</div>
 					</div>
 				</div>

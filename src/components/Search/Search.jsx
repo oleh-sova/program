@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
-function Search(props) {
-	const { searchCB } = props;
+function Search({ getSearchQuery }) {
 	const valueInput = useRef(null);
 
 	const handlerSubmit = (event) => {
@@ -9,7 +8,7 @@ function Search(props) {
 		!valueInput.current.value && alert('Please, enter something for the query');
 	};
 	const handlerInput = (event) => {
-		searchCB(event.target.value);
+		getSearchQuery(event.target.value);
 	};
 
 	return (
