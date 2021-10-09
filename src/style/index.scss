@@ -1,0 +1,176 @@
+@import "settings";
+@import "foundation-sites/scss/foundation";
+
+@include foundation-everything;
+@include foundation-flex-classes;
+@include foundation-flex-grid;
+
+body {
+  font-size: 16px;
+  margin: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* {
+  box-sizing: border-box;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+.empty {
+  text-align: center;
+  font-size: 25px;
+  line-height: 1;
+  padding: 30px 0;
+  background-color: lightgrey;
+}
+.header {
+  height: 100px;
+  border: 2px solid red;
+  &__logo {
+    height: 100px;
+    padding: 5px;
+    span {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 250%;
+      vertical-align: middle;
+    }
+    img {
+      max-width: 100%;
+      height: 100%;
+    }
+  }
+  .navigation {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-self: center;
+    span {
+      margin-right: 30px;
+      font-size: 125%;
+      font-weight: 500;
+    }
+  }
+}
+button {
+  border: 2px solid lightblue;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px 20px;
+}
+
+.courses {
+  padding: 20px;
+  border: 2px solid #0000ff;
+  .btn {
+    height: 39px;
+  }
+}
+.courseCard {
+  border: 2px solid green;
+  padding: 20px;
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    button {
+      margin-top: 20px;
+      align-self: center;
+    }
+    span {
+      font-weight: 600;
+    }
+    .auth {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+.search {
+  form {
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    input {
+      max-width: 40%;
+      margin: 0 20px 0 0;
+    }
+    button {
+      border-color: purple;
+      height: 100%;
+    }
+  }
+}
+.newCourse {
+  padding: 20px;
+  border: 2px solid green;
+  input {
+    margin: 0;
+  }
+  button {
+    height: 39px;
+    border-color: purple;
+  }
+  textarea {
+    border: 2px solid yellow;
+    min-height: 100px;
+  }
+  .btn {
+    margin-left: auto;
+    display: block;
+  }
+  .row {
+    margin-bottom: 20px;
+  }
+  .wrpList {
+    margin-bottom: 20px;
+    min-height: 250px;
+    &--delete {
+      button {
+        border-color: red;
+      }
+    }
+    &--wait {
+      button {
+        border-color: green;
+      }
+    }
+    input {
+      margin-bottom: 20px;
+    }
+    .btn {
+      margin: 0 auto;
+    }
+    h4 {
+      margin-bottom: 30px;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:not(:last-child) {
+          margin-bottom: 10px;
+        }
+        p {
+          width: 30%;
+        }
+      }
+    }
+  }
+}
