@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getFormatedTime } from '../../utils/utils.js';
 import { useHistory } from 'react-router-dom';
+import Button from '../UI/Button/Button';
+import Input from '../UI/Input/Input';
 
 function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 	const router = useHistory();
@@ -90,19 +92,16 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 				<div className='row align-justify expanded'>
 					<div className='columns large-3'>
 						<label htmlFor='title'>Title:</label>
-						<input
-							type='text'
+						<Input
 							id='title'
 							name='title'
-							velue={infoCourse.title}
+							value={infoCourse.title}
 							onChange={handlerInfoCourse}
 							placeholder='Enter title...'
 						/>
 					</div>
 					<div className='columns large-3 align-self-right align-self-bottom'>
-						<button type='submit' className='btn'>
-							Create course
-						</button>
+						<Button>Create course</Button>
 					</div>
 				</div>
 				<div className='row expanded'>
@@ -120,20 +119,15 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 						<div className='wrpList'>
 							<h4 className='text-center'>Add author</h4>
 							<label htmlFor='addAuthor'>Author name</label>
-							<input
-								type='text'
+							<Input
 								id='addAuthor'
 								value={newAuthor.name}
 								onChange={handlerAuthorName}
 								placeholder='Enter author name...'
 							/>
-							<button
-								type='button'
-								className='btn'
-								onClick={hundlerCreateAuthor}
-							>
+							<Button type='button' onClick={hundlerCreateAuthor}>
 								Create author
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div className='columns large-6'>
@@ -145,12 +139,12 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 										return (
 											<li key={author.id}>
 												<p>{author.name}</p>
-												<button
+												<Button
 													type='button'
 													onClick={() => handlerAddAuthor(author.id)}
 												>
 													Add author
-												</button>
+												</Button>
 											</li>
 										);
 									})
@@ -166,7 +160,7 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 						<div className='wrpList'>
 							<h4 className='text-center'>Duration</h4>
 							<label htmlFor='addDuratiom'>Duration</label>
-							<input
+							<Input
 								type='number'
 								id='duration'
 								name='duration'
@@ -191,12 +185,12 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 										return (
 											<li key={item.id}>
 												<p>{item.name}</p>
-												<button
+												<Button
 													type='button'
 													onClick={() => handlerDeleteAuthor(item.id)}
 												>
 													Delete author
-												</button>
+												</Button>
 											</li>
 										);
 									})

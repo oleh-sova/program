@@ -52,7 +52,7 @@ const Registration = ({ messageForm, updateMessageForm }) => {
 			/>
 			<Form onSubmit={handlerSendData}>
 				<label htmlFor='name'>Name</label>
-				<Input type='text' id='name' name='name' onChange={handlerUserData} />
+				<Input id='name' name='name' onChange={handlerUserData} />
 				<label htmlFor='email'>Email</label>
 				<Input
 					type='email'
@@ -61,15 +61,8 @@ const Registration = ({ messageForm, updateMessageForm }) => {
 					onChange={handlerUserData}
 				/>
 				<label htmlFor='password'>Password</label>
-				<Input
-					type='text'
-					id='password'
-					name='password'
-					onChange={handlerUserData}
-				/>
-				<Button type='submit' className='btn'>
-					Registration
-				</Button>
+				<Input id='password' name='password' onChange={handlerUserData} />
+				<Button>Registration</Button>
 				<p>
 					If you have an account you can
 					<Link to={'/login'}> Login!</Link>

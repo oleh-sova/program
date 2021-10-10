@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import {
+	Switch,
+	Route,
+	Redirect,
+	BrowserRouter as Router,
+} from 'react-router-dom';
 import Login from './components/Login/Login.jsx';
 import Registration from './components/Registration/Registration.jsx';
 import Header from './components/Header/Header.jsx';
@@ -20,8 +25,12 @@ const App = () => {
 	return (
 		<div className='App'>
 			<Header userName={userName} updateUserName={updateUserName} />
+
 			<Router>
 				<Switch>
+					<Route exact path='/'>
+						<Redirect to='/login' />
+					</Route>
 					<Route path='/courses' component={() => <Courses />} />
 					<Route
 						path='/login'

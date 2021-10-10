@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import Button from '../UI/Button/Button';
 
 function Search({ getSearchQuery }) {
 	const valueInput = useRef(null);
@@ -20,7 +21,7 @@ function Search({ getSearchQuery }) {
 					onChange={handlerInput}
 					placeholder='Enter course name or id...'
 				/>
-				<button type='submit'>Search</button>
+				<Button>Search</Button>
 			</form>
 		</div>
 	);

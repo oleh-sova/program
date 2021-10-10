@@ -23,8 +23,7 @@ function Header({ userName, updateUserName }) {
 							<span>{userName}</span>
 							{userName ? (
 								<Button type='button' onClick={handlerLogout}>
-									{' '}
-									Logout{' '}
+									Logout
 								</Button>
 							) : (
 								false

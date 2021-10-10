@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { getFormatedTime, getAuthorsName } from '../../utils/utils.js';
+import Button from '../UI/Button/Button.jsx';
 
 const CourseInfo = ({ courses, authorsList }) => {
 	const router = useHistory();
@@ -17,9 +18,9 @@ const CourseInfo = ({ courses, authorsList }) => {
 	return (
 		<section className='section-loyout'>
 			<div className='wrapper-section'>
-				<button className='scrumblers' onClick={() => router.goBack()}>
+				<Button className='scrumblers' onClick={() => router.goBack()}>
 					Back to courses
-				</button>
+				</Button>
 				<h1 className='text-center'>{title}</h1>
 				<div className='row expaneded'>
 					<div className='columns large-8'>

@@ -68,9 +68,7 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 					name='password'
 					onChange={handlerUserData}
 				/>
-				<Button type='submit' className='btn'>
-					Login
-				</Button>
+				<Button>Login</Button>
 				<p>
 					If you don't have an account you can
 					<Link to={'/registration'}> Registration!</Link>
