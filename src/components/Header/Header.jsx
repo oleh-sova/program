@@ -1,13 +1,16 @@
+import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
+
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
-import { useHistory } from 'react-router-dom';
 
 function Header({ userName, updateUserName }) {
 	const router = useHistory();
 
 	const handlerLogout = () => {
 		updateUserName('');
-		localStorage.removeItem('UserToken');
+		localStorage.removeItem('userToken');
+		localStorage.removeItem('role');
 		router.push('/login');
 	};
 
@@ -21,12 +24,10 @@ function Header({ userName, updateUserName }) {
 					<div className='columns shrink'>
 						<div className='navigation'>
 							<span>{userName}</span>
-							{userName ? (
+							{userName && (
 								<Button type='button' onClick={handlerLogout}>
 									Logout
 								</Button>
-							) : (
-								false
 							)}
 						</div>
 					</div>
@@ -35,5 +36,10 @@ function Header({ userName, updateUserName }) {
 		</>
 	);
 }
+
+Header.propTypes = {
+	userName: PropTypes.string,
+	updateUserName: PropTypes.func,
+};
 
 export default Header;

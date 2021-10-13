@@ -1,13 +1,14 @@
-import { useRef } from 'react';
+import PropTypes from 'prop-types';
+
 import Button from '../UI/Button/Button';
+import Input from '../UI/Input/Input';
 
-function Search({ getSearchQuery }) {
-	const valueInput = useRef(null);
-
+function Search({ getSearchQuery, searchQuery }) {
 	const handlerSubmit = (event) => {
 		event.preventDefault();
-		!valueInput.current.value && alert('Please, enter something for the query');
+		searchQuery && getSearchQuery(searchQuery);
 	};
+
 	const handlerInput = (event) => {
 		getSearchQuery(event.target.value);
 	};
@@ -15,9 +16,8 @@ function Search({ getSearchQuery }) {
 	return (
 		<div className='search'>
 			<form onSubmit={handlerSubmit}>
-				<input
-					type='text'
-					ref={valueInput}
+				<Input
+					value={searchQuery}
 					onChange={handlerInput}
 					placeholder='Enter course name or id...'
 				/>
@@ -26,5 +26,10 @@ function Search({ getSearchQuery }) {
 		</div>
 	);
 }
+
+Search.propTypes = {
+	searchQuery: PropTypes.string,
+	getSearchQuery: PropTypes.func,
+};
 
 export default Search;

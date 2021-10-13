@@ -1,10 +1,13 @@
-import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
+import PropTypes from 'prop-types';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-function CourseCard({ authorsList, ...props }) {
+import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
+
+const CourseCard = ({
+	courseInfo: { title, description, creationDate, duration, authors, id },
+	authorsList,
+}) => {
 	const { path } = useRouteMatch();
-	const { title, description, creationDate, duration, authors, id } =
-		props.courseInfo;
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
@@ -39,6 +42,11 @@ function CourseCard({ authorsList, ...props }) {
 			</div>
 		</div>
 	);
-}
+};
+
+CourseCard.propTypes = {
+	courseInfo: PropTypes.object,
+	authorsList: PropTypes.array,
+};
 
 export default CourseCard;

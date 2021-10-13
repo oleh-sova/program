@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useFetch = (url, setState) => {
+const useFetch = (url, setState, udatingComponent) => {
 	useEffect(() => {
 		console.log('get info..');
 		const getCourses = async () => {
@@ -9,7 +9,7 @@ const useFetch = (url, setState) => {
 			setState(data.result);
 		};
 		getCourses();
-	}, [url, setState]);
+	}, [url, setState, udatingComponent]);
 };
 
 export default useFetch;

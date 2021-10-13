@@ -1,10 +1,13 @@
 import { React, useState } from 'react';
+
+import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
-import Form from '../UI/Form/Form';
-import Button from '../UI/Button/Button';
-import Input from '../UI/Input/Input';
-import Error from '../UI/Error/Error';
+
 import { FetchSend } from '../../utils/utils.js';
+import Button from '../UI/Button/Button';
+import Error from '../UI/Error/Error';
+import Form from '../UI/Form/Form';
+import Input from '../UI/Input/Input';
 
 const Registration = ({ messageForm, updateMessageForm }) => {
 	const router = useHistory();
@@ -70,6 +73,11 @@ const Registration = ({ messageForm, updateMessageForm }) => {
 			</Form>
 		</section>
 	);
+};
+
+Registration.propTypes = {
+	messageForm: PropTypes.object,
+	updateMessageForm: PropTypes.func,
 };
 
 export default Registration;

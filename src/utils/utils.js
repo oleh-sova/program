@@ -29,6 +29,7 @@ export const FetchSend = async (data, url) => {
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
+			Authorization: localStorage.getItem('userToken') || false,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(data),

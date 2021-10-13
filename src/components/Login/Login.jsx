@@ -1,10 +1,13 @@
 import { React, useState } from 'react';
+
+import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
-import Form from '../UI/Form/Form';
-import Button from '../UI/Button/Button';
-import Input from '../UI/Input/Input';
+
 import { FetchSend } from '../../utils/utils.js';
+import Button from '../UI/Button/Button';
 import Error from '../UI/Error/Error';
+import Form from '../UI/Form/Form';
+import Input from '../UI/Input/Input';
 
 const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 	const router = useHistory();
@@ -13,10 +16,10 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 		password: '',
 	});
 
-	const handlerUserData = (event) => {
+	const handlerUserData = ({ target: { name, value } }) => {
 		setUserData({
 			...userData,
-			[event.target.name]: event.target.value,
+			[name]: value,
 		});
 	};
 
@@ -26,11 +29,14 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 			.then(({ successful, result, user, errors }) => {
 				if (successful) {
 					updateUserName(user.name);
-					localStorage.setItem('UserToken', result);
+
+					localStorage.setItem('userToken', result);
+
 					updateMessageForm({
 						message: '',
 						classHtml: '',
 					});
+
 					router.push('/courses');
 				}
 				if (!successful) {
@@ -49,10 +55,13 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 
 	return (
 		<section className='section-loyout'>
-			<Error
-				messageForm={messageForm.message}
-				classHtml={messageForm.classHtml}
-			/>
+			{messageForm.message && (
+				<Error
+					messageForm={messageForm.message}
+					classHtml={messageForm.classHtml}
+				/>
+			)}
+
 			<Form onSubmit={handlerLogin}>
 				<label htmlFor='email'>Email</label>
 				<Input
@@ -76,6 +85,12 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 			</Form>
 		</section>
 	);
+};
+
+Login.propTypes = {
+	updateUserName: PropTypes.func,
+	messageForm: PropTypes.object,
+	updateMessageForm: PropTypes.func,
 };
 
 export default Login;

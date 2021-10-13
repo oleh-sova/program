@@ -242,3 +242,12 @@ table {
   padding:  5px 20px;
   margin-bottom: 20px;
 }
+
+.access_dn {
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid grey;
+  padding: 20px;
+}

@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { getFormatedTime } from '../../utils/utils.js';
+
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+
+import { getFormatedTime, FetchSend } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
+import Error from '../UI/Error/Error';
 import Input from '../UI/Input/Input';
 
-function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
+const CreateCourse = ({
+	authorsList,
+	updateComponent,
+	messageForm,
+	updateMessageForm,
+}) => {
 	const router = useHistory();
 	const [authorsListClone, setAuthorsListClone] = useState([]);
 	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
@@ -21,9 +30,7 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 		setAuthorsListClone(authorsList);
 	}, [authorsList]);
 
-	const handlerInfoCourse = (event) => {
-		const name = event.target.name;
-		const value = event.target.value;
+	const handlerInfoCourse = ({ target: { name, value } }) => {
 		setInfoCourse({ ...infoCourse, [name]: value });
 	};
 
@@ -35,13 +42,31 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 			infoCourse.duration > 0 &&
 			authorsCourse.length > 0
 		) {
-			updateCoursesState({
-				id: uuidv4(),
-				...infoCourse,
-				creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
-				authors: authorsCourse.map((item) => item.id),
-			});
-			router.push('/courses');
+			FetchSend(
+				{
+					id: uuidv4(),
+					title: infoCourse.title,
+					description: infoCourse.description,
+					duration: Number(infoCourse.duration),
+					creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
+					authors: authorsCourse.map((item) => item.id),
+				},
+				'http://localhost:3000/courses/add'
+			)
+				.then((response) => {
+					if (response.successful) {
+						updateComponent('add_course');
+						router.push('/courses');
+					} else {
+						updateMessageForm({ message: response.errors, classHtml: 'error' });
+					}
+				})
+				.catch((e) =>
+					updateMessageForm({
+						message: 'Something wrong, please try later',
+						classHtml: 'error',
+					})
+				);
 		} else {
 			alert('Please enter all fields');
 		}
@@ -49,22 +74,25 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 
 	const handlerAuthorName = (event) => {
 		setNewAuthor({
-			id: uuidv4(),
 			name: event.target.value,
+			id: uuidv4(),
 		});
 	};
 
 	const hundlerCreateAuthor = () => {
 		if (!newAuthor.name) return alert('Empty field, please enter name');
 
-		const equalName = authorsListClone.reduce((result, author) => {
-			return author.name === newAuthor.name ? false : true;
-		}, true);
-
-		if (!equalName)
+		const equalName = authorsListClone.find(
+			(author) => author.name === newAuthor.name
+		);
+		if (equalName)
 			return alert("Pay attention, such user's name already existing");
 
-		updateAuthorState(newAuthor);
+		FetchSend(newAuthor, 'http://localhost:3000/authors/add').then((data) =>
+			alert('Author added')
+		);
+
+		updateComponent('add_author');
 		setAuthorsListClone([...authorsListClone, newAuthor]);
 		setNewAuthor({ name: '', id: '' });
 	};
@@ -88,7 +116,11 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 	};
 	return (
 		<section className='newCourse'>
-			<form action='' onSubmit={handlerCreateCourse}>
+			<Error
+				messageForm={messageForm.message}
+				classHtml={messageForm.classHtml}
+			/>
+			<form onSubmit={handlerCreateCourse}>
 				<div className='row align-justify expanded'>
 					<div className='columns large-3'>
 						<label htmlFor='title'>Title:</label>
@@ -206,6 +238,13 @@ function CreateCourse({ authorsList, updateCoursesState, updateAuthorState }) {
 			</form>
 		</section>
 	);
-}
+};
+
+CreateCourse.propTypes = {
+	authorsList: PropTypes.array,
+	updateComponent: PropTypes.func,
+	messageForm: PropTypes.object,
+	updateMessageForm: PropTypes.func,
+};
 
 export default CreateCourse;
