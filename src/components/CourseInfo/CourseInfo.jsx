@@ -1,6 +1,6 @@
 import React from 'react';
 
-import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { getFormatedTime, getAuthorsName } from '../../utils/utils.js';
@@ -61,8 +61,12 @@ const CourseInfo = ({ courses, authorsList }) => {
 	);
 };
 
-CourseInfo.propTypes = {
-	courses: PropTypes.array,
-	coursesList: PropTypes.array,
+// just training, another (old )way in order to derive something from Store
+const mapStateToProps = (state) => {
+	return {
+		courses: state.courses.courses,
+		authorsList: state.authors.authors,
+	};
 };
-export default CourseInfo;
+
+export default connect(mapStateToProps, null)(CourseInfo);

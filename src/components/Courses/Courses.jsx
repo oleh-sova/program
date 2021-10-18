@@ -1,28 +1,34 @@
 import { useState, useMemo } from 'react';
 
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useRouteMatch, Link } from 'react-router-dom';
 
 import CourseCard from '../CourseCard/CourseCard';
 import Search from '../Search/Search';
+import Error from '../UI/Error/Error';
 
-function Courses({ authorsList, coursesList }) {
+function Courses() {
 	const { path } = useRouteMatch();
 	const [searchQuery, setSearchQuery] = useState('');
+	const {
+		courses: { courses },
+		alert: { alert },
+	} = useSelector((state) => state);
 
 	const sortedCourses = useMemo(() => {
 		if (searchQuery) {
-			return coursesList.filter(
+			return courses.filter(
 				(course) =>
 					course.title.toLowerCase().match(searchQuery) ||
 					course.id.toLowerCase().match(searchQuery)
 			);
 		}
-		return coursesList;
-	}, [searchQuery, coursesList]);
+		return courses;
+	}, [searchQuery, courses]);
 
 	return (
 		<section className='courses'>
+			{alert && <Error text={alert} classes='success' />}
 			<div className='row'>
 				<div className='columns large-9'>
 					<Search
@@ -38,13 +44,7 @@ function Courses({ authorsList, coursesList }) {
 			</div>
 			{sortedCourses.length > 0 ? (
 				sortedCourses.map((course) => {
-					return (
-						<CourseCard
-							key={course.id}
-							courseInfo={course}
-							authorsList={authorsList}
-						/>
-					);
+					return <CourseCard key={course.id} courseInfo={course} />;
 				})
 			) : (
 				<div className='empty'> Matches not found, sorry</div>
@@ -52,10 +52,5 @@ function Courses({ authorsList, coursesList }) {
 		</section>
 	);
 }
-
-Courses.propTypes = {
-	authorsList: PropTypes.array,
-	coursesList: PropTypes.array,
-};
 
 export default Courses;

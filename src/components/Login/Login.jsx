@@ -1,20 +1,21 @@
 import { React, useState } from 'react';
 
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { FetchSend } from '../../utils/utils.js';
+import { userLogin } from '../../store/user/actionsCreators.js';
 import Button from '../UI/Button/Button';
 import Error from '../UI/Error/Error';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
 
-const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
-	const router = useHistory();
+const Login = () => {
+	const { push } = useHistory();
 	const [userData, setUserData] = useState({
 		email: '',
 		password: '',
 	});
+	const dispatch = useDispatch();
 
 	const handlerUserData = ({ target: { name, value } }) => {
 		setUserData({
@@ -25,43 +26,11 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 
 	const handlerLogin = (event) => {
 		event.preventDefault();
-		FetchSend(userData, 'http://localhost:3000/login')
-			.then(({ successful, result, user, errors }) => {
-				if (successful) {
-					updateUserName(user.name);
-
-					localStorage.setItem('userToken', result);
-
-					updateMessageForm({
-						message: '',
-						classHtml: '',
-					});
-
-					router.push('/courses');
-				}
-				if (!successful) {
-					errors
-						? updateMessageForm({ message: errors, classHtml: 'error' })
-						: updateMessageForm({ message: result, classHtml: 'error' });
-				}
-			})
-			.catch((e) =>
-				updateMessageForm({
-					message: 'Something wrong, please try later',
-					classHtml: 'error',
-				})
-			);
+		dispatch(userLogin('http://localhost:3000/login', userData, push));
 	};
 
 	return (
 		<section className='section-loyout'>
-			{messageForm.message && (
-				<Error
-					messageForm={messageForm.message}
-					classHtml={messageForm.classHtml}
-				/>
-			)}
-
 			<Form onSubmit={handlerLogin}>
 				<label htmlFor='email'>Email</label>
 				<Input
@@ -85,12 +54,6 @@ const Login = ({ updateUserName, messageForm, updateMessageForm }) => {
 			</Form>
 		</section>
 	);
-};
-
-Login.propTypes = {
-	updateUserName: PropTypes.func,
-	messageForm: PropTypes.object,
-	updateMessageForm: PropTypes.func,
 };
 
 export default Login;

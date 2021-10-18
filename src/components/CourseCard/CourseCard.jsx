@@ -1,19 +1,35 @@
 import PropTypes from 'prop-types';
+import { AiTwotoneDelete } from 'react-icons/ai';
+import { BsPencilFill } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import { deleteCourse } from '../../store/courses/actionsCreators.js';
 import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
+import Button from '../UI/Button/Button';
 
 const CourseCard = ({
 	courseInfo: { title, description, creationDate, duration, authors, id },
-	authorsList,
 }) => {
 	const { path } = useRouteMatch();
+	const dispatch = useDispatch();
+
+	const {
+		authors: { authors: authorsList },
+		user: { token },
+	} = useSelector((state) => state);
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
 		return author;
 	}, '');
 
+	const handlerDeleteCourse = () => {
+		console.log('Button');
+		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
+	};
+
+	const handlerChangeCourse = () => {};
 	return (
 		<div className='courseCard'>
 			<div className='row'>
@@ -34,9 +50,17 @@ const CourseCard = ({
 						<div>
 							<span>Created:</span> {creationDate}
 						</div>
-						<Link to={`${path}/${id}`} className='btn-g1'>
-							Show course
-						</Link>
+						<div className='wrapper-btn'>
+							<Link to={`${path}/${id}`} className='btn-g1'>
+								Show course
+							</Link>
+							<Button handler={handlerDeleteCourse}>
+								<AiTwotoneDelete />
+							</Button>
+							<Button handler={handlerChangeCourse}>
+								<BsPencilFill />
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -46,7 +70,6 @@ const CourseCard = ({
 
 CourseCard.propTypes = {
 	courseInfo: PropTypes.object,
-	authorsList: PropTypes.array,
 };
 
 export default CourseCard;

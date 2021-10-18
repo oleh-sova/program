@@ -23,16 +23,3 @@ export const getAuthorsName = (authorsList, authors) => {
 		return author;
 	}, '');
 };
-
-export const FetchSend = async (data, url) => {
-	console.log('Sending data ...');
-	const response = await fetch(url, {
-		method: 'POST',
-		headers: {
-			Authorization: localStorage.getItem('userToken') || false,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	});
-	return await response.json();
-};
