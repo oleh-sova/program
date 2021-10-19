@@ -12,7 +12,7 @@ function Courses() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const {
 		courses: { courses },
-		alert: { alert },
+		alert: { alert, statusError },
 	} = useSelector((state) => state);
 
 	const sortedCourses = useMemo(() => {
@@ -28,7 +28,7 @@ function Courses() {
 
 	return (
 		<section className='courses'>
-			{alert && <Error text={alert} classes='success' />}
+			{alert && <Error text={alert} classes={statusError} />}
 			<div className='row'>
 				<div className='columns large-9'>
 					<Search

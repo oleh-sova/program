@@ -30,18 +30,23 @@ export function addNewCourse(url, courseData, token = null, push) {
 }
 
 export function deleteCourse(url, courseId, token = null) {
-	console.log(courseId);
 	return async (dispatch) => {
-		const response = await fetch(`${url}${courseId}`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: token,
-			},
-		});
-		const json = await response.json();
-		if (json.successful) {
-			dispatch({ type: DELETE_COURSE, payload: courseId });
-			dispatch(showError('Course was deleted!'));
+		try {
+			const response = await fetch(`${url}${courseId}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: token,
+				},
+			});
+			const json = await response.json();
+			if (json.successful) {
+				dispatch({ type: DELETE_COURSE, payload: courseId });
+				dispatch(showError('Course was deleted!', 'success'));
+			} else {
+				dispatch(showError(json.message));
+			}
+		} catch (error) {
+			console.log('error');
 		}
 	};
 }

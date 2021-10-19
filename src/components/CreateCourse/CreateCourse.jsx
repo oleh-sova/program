@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -17,13 +17,13 @@ import Error from '../UI/Error/Error';
 import Input from '../UI/Input/Input';
 
 const CreateCourse = () => {
-	const { push } = useHistory();
+	const { push, goBack } = useHistory();
 	const dispatch = useDispatch();
 
 	const {
 		user: { token },
 		authors: { authorsCourse, authors },
-		alert: { alert },
+		alert: { alert, statusError },
 	} = useSelector((state) => state);
 
 	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
@@ -32,6 +32,8 @@ const CreateCourse = () => {
 		description: '',
 		duration: 0,
 	});
+
+	// set/cleat Timeout for message
 
 	const handlerInfoCourse = ({ target: { name, value } }) => {
 		setInfoCourse({ ...infoCourse, [name]: value });
@@ -92,9 +94,10 @@ const CreateCourse = () => {
 	const handlerDeleteAuthor = (authorId) => {
 		dispatch(deleteAuthorToCourse(authorId));
 	};
+
 	return (
 		<section className='newCourse'>
-			{alert && <Error text={alert} />}
+			{alert && <Error text={alert} classes={statusError} />}
 			<form onSubmit={handlerSubmitForm}>
 				<div className='row align-justify expanded'>
 					<div className='columns large-3'>
@@ -109,6 +112,15 @@ const CreateCourse = () => {
 					</div>
 					<div className='columns large-3 align-self-right align-self-bottom'>
 						<Button>Create course</Button>
+						<Button
+							className='scrumblers'
+							type='button'
+							onClick={() => {
+								goBack();
+							}}
+						>
+							Back to courses
+						</Button>
 					</div>
 				</div>
 				<div className='row expanded'>
