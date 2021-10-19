@@ -11,9 +11,10 @@ import Error from '../UI/Error/Error';
 function Courses() {
 	const { path } = useRouteMatch();
 	const [searchQuery, setSearchQuery] = useState('');
-
-	const { courses } = useSelector(getCoursesStore);
-	const { alert } = useSelector(getAlertStore);
+	const {
+		courses: { courses },
+		alert: { alert, statusError },
+	} = useSelector((state) => state);
 
 	const sortedCourses = useMemo(() => {
 		if (searchQuery) {
@@ -28,7 +29,7 @@ function Courses() {
 
 	return (
 		<section className='courses'>
-			{alert && <Error text={alert} classes='success' />}
+			{alert && <Error text={alert} classes={statusError} />}
 			<div className='row'>
 				<div className='columns large-9'>
 					<Search
