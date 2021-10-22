@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
 
-function Header({ userName, updateUserName }) {
+function Header() {
 	const router = useHistory();
+	const {
+		user: { token, name = 'Author' },
+	} = useSelector((state) => state);
 
 	const handlerLogout = () => {
-		updateUserName('');
-		localStorage.removeItem('userToken');
-		localStorage.removeItem('role');
 		router.push('/login');
 	};
 
@@ -23,8 +24,8 @@ function Header({ userName, updateUserName }) {
 					</div>
 					<div className='columns shrink'>
 						<div className='navigation'>
-							<span>{userName}</span>
-							{userName && (
+							<span>{name}</span>
+							{token && (
 								<Button type='button' onClick={handlerLogout}>
 									Logout
 								</Button>

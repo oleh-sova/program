@@ -7,6 +7,5 @@ export const getDataFetch = async (url, data, token) => {
 		},
 		body: JSON.stringify(data),
 	});
-	console.log(response, 'rs');
 	return await response.json();
 };

@@ -25,7 +25,6 @@ const CourseCard = ({
 	}, '');
 
 	const handlerDeleteCourse = () => {
-		console.log('Button');
 		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
 	};
 

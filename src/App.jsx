@@ -1,21 +1,31 @@
-import {
-	Switch,
-	Route,
-	Redirect,
-	BrowserRouter as Router,
-} from 'react-router-dom';
+import { Suspense } from 'react';
+import { lazy } from 'react';
 
-import CourseInfo from './components/CourseInfo/CourseInfo';
-import Courses from './components/Courses/Courses.jsx';
-import CreateCourse from './components/CreateCourse/CreateCourse.jsx';
+import { useSelector } from 'react-redux';
+import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+
 import Header from './components/Header/Header.jsx';
-import Login from './components/Login/Login.jsx';
-import Registration from './components/Registration/Registration.jsx';
+import Loader from './components/UI/Loader/Loader';
+import PrivateRoute from './routes/PrivateRoute';
+import ProtectedRoutes from './routes/ProtectedRoutes';
+import PublicRoute from './routes/PublicRoute';
 import { getAuthors } from './store/authors/actionsCreators';
 import { getCourses } from './store/courses/actionsCreators';
 import useFetch from './utils/customHooks/useFetch.js';
 
+const Login = lazy(() => import('./components/Login/Login.jsx'));
+const Registration = lazy(() =>
+	import('./components/Registration/Registration.jsx')
+);
+const NoFoundComponent = lazy(() =>
+	import('./components/NoFoundComponent/NoFoundComponent')
+);
+
 const App = () => {
+	const {
+		user: { token: isAuthenticated },
+	} = useSelector((state) => state);
+
 	// API get all information
 	useFetch(getCourses);
 	useFetch(getAuthors);
@@ -24,27 +34,22 @@ const App = () => {
 		<div className='App'>
 			<Router>
 				<Header />
-				<Switch>
-					<Route exact path='/'>
-						<Redirect to='/login' />
-					</Route>
-					<Route exact path='/courses'>
-						<Courses />
-					</Route>
-
-					<Route path={'/courses/add'}>
-						<CreateCourse />
-					</Route>
-					<Route path={'/courses/:id'}>
-						<CourseInfo />
-					</Route>
-					<Route path='/login'>
-						<Login />
-					</Route>
-					<Route path='/registration'>
-						<Registration />
-					</Route>
-				</Switch>
+				<Suspense fallback={<Loader />}>
+					<Switch>
+						<PublicRoute path='/login' isAuthenticated={isAuthenticated}>
+							<Login />
+						</PublicRoute>
+						<PublicRoute path='/registration' isAuthenticated={isAuthenticated}>
+							<Registration />
+						</PublicRoute>
+						<PrivateRoute path='/' isAuthenticated={isAuthenticated}>
+							<ProtectedRoutes />
+						</PrivateRoute>
+						<Route path='*'>
+							<NoFoundComponent />
+						</Route>
+					</Switch>
+				</Suspense>
 			</Router>
 		</div>
 	);

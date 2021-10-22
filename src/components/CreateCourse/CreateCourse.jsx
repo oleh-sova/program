@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -10,7 +10,7 @@ import {
 	deleteAuthorToCourse,
 } from '../../store/authors/actionsCreators.js';
 import { addNewCourse } from '../../store/courses/actionsCreators.js';
-import { showError } from '../../store/errors/actionsCreators.js';
+import { isOpenMessage } from '../../store/message/actionsCreators.js';
 import { getFormatedTime } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 import Error from '../UI/Error/Error';
@@ -23,7 +23,7 @@ const CreateCourse = () => {
 	const {
 		user: { token },
 		authors: { authorsCourse, authors },
-		alert: { alert, statusError },
+		message: { messages },
 	} = useSelector((state) => state);
 
 	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
@@ -32,8 +32,6 @@ const CreateCourse = () => {
 		description: '',
 		duration: 0,
 	});
-
-	// set/cleat Timeout for message
 
 	const handlerInfoCourse = ({ target: { name, value } }) => {
 		setInfoCourse({ ...infoCourse, [name]: value });
@@ -60,7 +58,7 @@ const CreateCourse = () => {
 		) {
 			dispatch(addNewCourse(urlAddCourse, course, token, push));
 		} else {
-			dispatch(showError('Please enter all fields'));
+			dispatch(isOpenMessage('Please enter all fields'));
 		}
 	};
 
@@ -73,12 +71,14 @@ const CreateCourse = () => {
 
 	const hundlerCreateAuthor = () => {
 		if (!newAuthor.name) {
-			dispatch(showError('Empty field, please enter name'));
+			dispatch(isOpenMessage('Empty field, please enter name'));
 			return;
 		}
 
 		if (authors.find((author) => author.name === newAuthor.name)) {
-			dispatch(showError("Pay attention, such user's name already existing"));
+			dispatch(
+				isOpenMessage("Pay attention, such user's name already existing")
+			);
 			return;
 		}
 
@@ -97,11 +97,23 @@ const CreateCourse = () => {
 
 	return (
 		<section className='newCourse'>
-			{alert && <Error text={alert} classes={statusError} />}
+			{messages.length > 0 && (
+				<ul className='message'>
+					{messages.map((message) => {
+						return (
+							<Error
+								key={message.id}
+								id={message.id}
+								text={message.text}
+								statusMessage={message.statusMessage}
+							/>
+						);
+					})}
+				</ul>
+			)}
 			<form onSubmit={handlerSubmitForm}>
 				<div className='row align-justify expanded'>
 					<div className='columns large-3'>
-						<label htmlFor='title'>Title:</label>
 						<Input
 							id='title'
 							name='title'
@@ -139,6 +151,7 @@ const CreateCourse = () => {
 							<h4 className='text-center'>Add author</h4>
 							<label htmlFor='addAuthor'>Author name</label>
 							<Input
+								withLabel={false}
 								id='addAuthor'
 								value={newAuthor.name}
 								onChange={handlerAuthorName}
@@ -178,7 +191,6 @@ const CreateCourse = () => {
 					<div className='columns large-6'>
 						<div className='wrpList'>
 							<h4 className='text-center'>Duration</h4>
-							<label htmlFor='addDuratiom'>Duration</label>
 							<Input
 								type='number'
 								id='duration'

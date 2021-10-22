@@ -17,8 +17,10 @@ function Search({ getSearchQuery, searchQuery }) {
 		<div className='search'>
 			<form onSubmit={handlerSubmit}>
 				<Input
+					withLabel={false}
 					value={searchQuery}
 					onChange={handlerInput}
+					className='search-input'
 					placeholder='Enter course name or id...'
 				/>
 				<Button>Search</Button>
