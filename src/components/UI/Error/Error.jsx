@@ -1,20 +1,14 @@
 import React from 'react';
 
-import { useSelector } from 'react-redux';
+import useHideMessage from '../../../utils/customHooks/useHideMessage';
 
-import useHideMessage from '../../../utils/customHooks/useTimerMessage';
-
-const Error = ({ text, classes }) => {
-	const {
-		alert: { alert },
-	} = useSelector((state) => state);
-
-	useHideMessage(alert);
+const Error = ({ id, text, statusMessage = 'alert' }) => {
+	useHideMessage(id);
 
 	return (
-		<div className={`callout ${classes}`}>
+		<li className={`message__form ${statusMessage}`}>
 			<h5>{text}</h5>
-		</div>
+		</li>
 	);
 };
 

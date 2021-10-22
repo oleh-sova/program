@@ -15,13 +15,3 @@ export const sendDataAPI = async (url, data, token = null) => {
 	});
 	return await response.json();
 };
-
-export const deleteDataAPI = async (url, courseId, token) => {
-	const response = await fetch(`${url}${courseId}`, {
-		method: 'DELETE',
-		headers: {
-			Authorization: token,
-		},
-	});
-	return await response.json();
-};

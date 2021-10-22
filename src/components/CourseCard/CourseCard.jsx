@@ -25,13 +25,7 @@ const CourseCard = ({
 	}, '');
 
 	const handlerDeleteCourse = () => {
-		deleteDataAPI('http://localhost:3000/courses/', id, token).then(
-			({ successful }) => {
-				if (successful) {
-					dispatch(deleteCourse(id));
-				}
-			}
-		);
+		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
 	};
 
 	const handlerChangeCourse = () => {};

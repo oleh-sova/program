@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
-
-import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { getUserStore } from '../../store/selectors';
@@ -10,20 +9,11 @@ import Button from '../UI/Button/Button';
 
 function Header() {
 	const router = useHistory();
-	const dispatch = useDispatch();
-
-	const userToken = localStorage.getItem('token');
-	const { name, token } = useSelector(getUserStore);
-
-	useEffect(() => {
-		if (userToken) {
-			router.push('/courses');
-		}
-	}, [router, userToken]);
+	const {
+		user: { token, name = 'Author' },
+	} = useSelector((state) => state);
 
 	const handlerLogout = () => {
-		dispatch(userLogout());
-		localStorage.removeItem('token');
 		router.push('/login');
 	};
 
@@ -35,7 +25,7 @@ function Header() {
 						<Logo />
 					</div>
 					<div className='columns shrink'>
-						{(userToken || token) && (
+						{token && (
 							<div className='navigation'>
 								<span>{name}</span>
 								<Button type='button' onClick={handlerLogout}>

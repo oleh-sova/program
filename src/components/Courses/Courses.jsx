@@ -13,7 +13,7 @@ function Courses() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const {
 		courses: { courses },
-		alert: { alert, statusError },
+		message: { messages },
 	} = useSelector((state) => state);
 
 	const sortedCourses = useMemo(() => {
@@ -29,7 +29,20 @@ function Courses() {
 
 	return (
 		<section className='courses'>
-			{alert && <Error text={alert} classes={statusError} />}
+			{messages.length > 0 && (
+				<ul className='message'>
+					{messages.map((message) => {
+						return (
+							<Error
+								key={message.id}
+								id={message.id}
+								text={message.text}
+								statusMessage={message.statusMessage}
+							/>
+						);
+					})}
+				</ul>
+			)}
 			<div className='row'>
 				<div className='columns large-9'>
 					<Search

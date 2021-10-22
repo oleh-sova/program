@@ -1,5 +1,8 @@
-import { showError } from '../errors/actionsCreators';
-import { ADD_COURSE, DELETE_COURSE, GET_COURSES } from './actionTypes';
+import { getDataFetch } from '../../utils/API/api';
+import { getAuthors } from '../authors/actionsCreators';
+import { CLEAR_AUTHOR } from '../authors/actionTypes';
+import { isOpenMessage } from '../message/actionsCreators';
+import { DELETE_COURSE, GET_COURSES } from './actionTypes';
 
 export const getCourses = (data) => ({ type: GET_COURSES, payload: data });
 
@@ -20,9 +23,9 @@ export function deleteCourse(url, courseId, token = null) {
 			const json = await response.json();
 			if (json.successful) {
 				dispatch({ type: DELETE_COURSE, payload: courseId });
-				dispatch(showError('Course was deleted!', 'success'));
+				dispatch(isOpenMessage('Course was deleted!', 'success'));
 			} else {
-				dispatch(showError(json.message));
+				dispatch(isOpenMessage(json.message));
 			}
 		} catch (error) {
 			console.log('error');

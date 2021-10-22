@@ -1,17 +1,31 @@
-import { useHistory } from 'react-router-dom';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Suspense } from 'react';
+import { lazy } from 'react';
 
-import CourseInfo from './components/CourseInfo/CourseInfo';
-import Courses from './components/Courses/Courses.jsx';
-import CreateCourse from './components/CreateCourse/CreateCourse.jsx';
+import { useSelector } from 'react-redux';
+import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+
 import Header from './components/Header/Header.jsx';
-import Login from './components/Login/Login.jsx';
-import Registration from './components/Registration/Registration.jsx';
+import Loader from './components/UI/Loader/Loader';
+import PrivateRoute from './routes/PrivateRoute';
+import ProtectedRoutes from './routes/ProtectedRoutes';
+import PublicRoute from './routes/PublicRoute';
 import { getAuthors } from './store/authors/actionsCreators';
 import { getCourses } from './store/courses/actionsCreators';
 import useFetch from './utils/customHooks/useFetch.js';
 
+const Login = lazy(() => import('./components/Login/Login.jsx'));
+const Registration = lazy(() =>
+	import('./components/Registration/Registration.jsx')
+);
+const NoFoundComponent = lazy(() =>
+	import('./components/NoFoundComponent/NoFoundComponent')
+);
+
 const App = () => {
+	const {
+		user: { token: isAuthenticated },
+	} = useSelector((state) => state);
+
 	// API get all information
 	useFetch('http://localhost:3000/courses/all', getCourses);
 	useFetch('http://localhost:3000/authors/all', getAuthors);
