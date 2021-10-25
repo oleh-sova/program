@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { userLogout } from '../../store/user/actionsCreators';
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
 
 function Header() {
-	const router = useHistory();
+	const dispatch = useDispatch();
 	const {
-		user: { token, name = 'Author' },
+		user: { isAuth, token, name = 'Author' },
 	} = useSelector((state) => state);
 
 	const handlerLogout = () => {
-		router.push('/login');
+		dispatch(userLogout(token));
 	};
 
 	return (
@@ -24,11 +24,13 @@ function Header() {
 					</div>
 					<div className='columns shrink'>
 						<div className='navigation'>
-							<span>{name}</span>
-							{token && (
-								<Button type='button' onClick={handlerLogout}>
-									Logout
-								</Button>
+							{isAuth && (
+								<>
+									<span>{name}</span>
+									<Button type='button' onClick={handlerLogout}>
+										Logout
+									</Button>
+								</>
 							)}
 						</div>
 					</div>

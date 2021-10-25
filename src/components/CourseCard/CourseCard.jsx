@@ -16,7 +16,7 @@ const CourseCard = ({
 
 	const {
 		authors: { authors: authorsList },
-		user: { token },
+		user: { token, role },
 	} = useSelector((state) => state);
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
@@ -28,7 +28,6 @@ const CourseCard = ({
 		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
 	};
 
-	const handlerChangeCourse = () => {};
 	return (
 		<div className='courseCard'>
 			<div className='row'>
@@ -53,12 +52,16 @@ const CourseCard = ({
 							<Link to={`${path}/${id}`} className='btn-g1'>
 								Show course
 							</Link>
-							<Button handler={handlerDeleteCourse}>
-								<AiTwotoneDelete />
-							</Button>
-							<Button handler={handlerChangeCourse}>
-								<BsPencilFill />
-							</Button>
+							{role && (
+								<>
+									<Link to={`${path}/update/${id}`} className='update-button'>
+										<BsPencilFill />
+									</Link>
+									<Button handler={handlerDeleteCourse}>
+										<AiTwotoneDelete />
+									</Button>
+								</>
+							)}
 						</div>
 					</div>
 				</div>

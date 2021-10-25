@@ -7,7 +7,6 @@ import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import Header from './components/Header/Header.jsx';
 import Loader from './components/UI/Loader/Loader';
 import PrivateRoute from './routes/PrivateRoute';
-import ProtectedRoutes from './routes/ProtectedRoutes';
 import PublicRoute from './routes/PublicRoute';
 import { getAuthors } from './store/authors/actionsCreators';
 import { getCourses } from './store/courses/actionsCreators';
@@ -20,10 +19,15 @@ const Registration = lazy(() =>
 const NoFoundComponent = lazy(() =>
 	import('./components/NoFoundComponent/NoFoundComponent')
 );
+const Courses = lazy(() => import('./components/Courses/Courses.jsx'));
+const CreateCourse = lazy(() =>
+	import('./components/CreateCourse/CreateCourse.jsx')
+);
+const CourseInfo = lazy(() => import('./components/CourseInfo/CourseInfo.jsx'));
 
 const App = () => {
 	const {
-		user: { token: isAuthenticated },
+		user: { isAuth: isAuthenticated },
 	} = useSelector((state) => state);
 
 	// API get all information
@@ -42,8 +46,33 @@ const App = () => {
 						<PublicRoute path='/registration' isAuthenticated={isAuthenticated}>
 							<Registration />
 						</PublicRoute>
-						<PrivateRoute path='/' isAuthenticated={isAuthenticated}>
-							<ProtectedRoutes />
+						<PrivateRoute
+							exact
+							path='/courses'
+							isAuthenticated={isAuthenticated}
+						>
+							<Courses />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/add'
+							isAuthenticated={isAuthenticated}
+						>
+							<CreateCourse />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/:id'
+							isAuthenticated={isAuthenticated}
+						>
+							<CourseInfo />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/update/:id'
+							isAuthenticated={isAuthenticated}
+						>
+							<CreateCourse />
 						</PrivateRoute>
 						<Route path='*'>
 							<NoFoundComponent />

@@ -23,3 +23,16 @@ export const getAuthorsName = (authorsList, authors) => {
 		return author;
 	}, '');
 };
+
+export const getAuthorsInfo = (authorsList, authors) => {
+	return authorsList.reduce((author, nextAuthor) => {
+		authors.includes(nextAuthor.id) && (author = [...author, nextAuthor]);
+		return author;
+	}, []);
+};
+
+export const clearAuthorList = (authorsList, authors) =>
+	authorsList.reduce((result, author) => {
+		!authors.includes(author.id) && (result = [...result, author]);
+		return result;
+	}, []);

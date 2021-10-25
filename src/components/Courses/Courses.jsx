@@ -5,7 +5,7 @@ import { useRouteMatch, Link } from 'react-router-dom';
 
 import CourseCard from '../CourseCard/CourseCard';
 import Search from '../Search/Search';
-import Error from '../UI/Error/Error';
+import Message from '../UI/Message/Message';
 
 function Courses() {
 	const { path } = useRouteMatch();
@@ -13,6 +13,7 @@ function Courses() {
 	const {
 		courses: { courses },
 		message: { messages },
+		user: { role },
 	} = useSelector((state) => state);
 
 	const sortedCourses = useMemo(() => {
@@ -28,11 +29,11 @@ function Courses() {
 
 	return (
 		<section className='courses'>
-			{messages.length > 0 && (
+			{!!messages.length && (
 				<ul className='message'>
 					{messages.map((message) => {
 						return (
-							<Error
+							<Message
 								key={message.id}
 								id={message.id}
 								text={message.text}
@@ -50,12 +51,14 @@ function Courses() {
 					/>
 				</div>
 				<div className='columns large-3'>
-					<Link to={`${path}/add`} className='btn-g1'>
-						Add new course
-					</Link>
+					{role && (
+						<Link to={`${path}/add`} className='btn-g1'>
+							Add new course
+						</Link>
+					)}
 				</div>
 			</div>
-			{sortedCourses.length > 0 ? (
+			{!!sortedCourses.length ? (
 				sortedCourses.map((course) => {
 					return <CourseCard key={course.id} courseInfo={course} />;
 				})

@@ -1,9 +1,10 @@
 import { getDataFetch } from '../../utils/API/api';
+import { isOpenMessage } from '../message/actionsCreators';
 import {
-	ADD_AUTHOR,
 	APPROVE_AUTHOR_COURSE,
 	DISAPPROVE_AUTHOR_COURSE,
 	GET_AUTHORS,
+	GET_AUTORS_COURSE,
 } from './actionTypes';
 
 export function getAuthors() {
@@ -18,10 +19,13 @@ export function getAuthors() {
 	};
 }
 
-export const addAuthor = (url, authorData, token = null) => {
+export const addAuthor = (authorData, token = null) => {
 	return (dispatch) => {
-		getDataFetch(url, authorData, token);
-		dispatch({ type: ADD_AUTHOR, payload: authorData });
+		getDataFetch('http://localhost:3000/authors/add', authorData, token)
+			.then(({ successful }) => successful && dispatch(getAuthors()))
+			.catch((error) =>
+				dispatch(isOpenMessage('Something is wrong, try later ...!!!'))
+			);
 	};
 };
 
@@ -36,5 +40,33 @@ export const deleteAuthorToCourse = (authorId) => {
 	return {
 		type: DISAPPROVE_AUTHOR_COURSE,
 		payload: authorId,
+	};
+};
+
+export const getAuthorsCourse = (authorsId) => ({
+	type: GET_AUTORS_COURSE,
+	payload: authorsId,
+});
+
+export const deletelAuthor = (authorsId, token) => {
+	return async (dispatch) => {
+		try {
+			const response = await fetch(
+				`http://localhost:3000/authors/${authorsId}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: token,
+					},
+				}
+			);
+			const { successful } = await response.json();
+			if (successful) {
+				dispatch(getAuthors());
+				dispatch(isOpenMessage('Author was deleted!', 'successful'));
+			}
+		} catch (error) {
+			dispatch(isOpenMessage('Something is wrong, try later ...!!!'));
+		}
 	};
 };

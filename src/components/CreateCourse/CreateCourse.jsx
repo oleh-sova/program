@@ -1,37 +1,67 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { useHistory, useParams } from 'react-router-dom';
 
 import {
 	addAuthor,
 	addAuthorToCourse,
+	deletelAuthor,
 	deleteAuthorToCourse,
+	getAuthors,
+	getAuthorsCourse,
 } from '../../store/authors/actionsCreators.js';
-import { addNewCourse } from '../../store/courses/actionsCreators.js';
+import { CLEAR_AUTHOR } from '../../store/authors/actionTypes.js';
+import {
+	addNewCourse,
+	updateCourse,
+} from '../../store/courses/actionsCreators.js';
 import { isOpenMessage } from '../../store/message/actionsCreators.js';
 import { getFormatedTime } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
-import Error from '../UI/Error/Error';
 import Input from '../UI/Input/Input';
+import Message from '../UI/Message/Message';
 
 const CreateCourse = () => {
 	const { push, goBack } = useHistory();
 	const dispatch = useDispatch();
 
+	let { id } = useParams();
+
 	const {
+		courses: { courses },
 		user: { token },
 		authors: { authorsCourse, authors },
 		message: { messages },
 	} = useSelector((state) => state);
 
-	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
+	const [newAuthor, setNewAuthor] = useState({ name: '' });
 	const [infoCourse, setInfoCourse] = useState({
 		title: '',
 		description: '',
 		duration: 0,
 	});
+
+	/// update course
+	useEffect(() => {
+		if (id) {
+			const [currentCurse] = courses.filter((course) => {
+				return course.id === id;
+			});
+
+			dispatch(getAuthorsCourse(currentCurse.authors));
+			setInfoCourse({
+				title: currentCurse.title,
+				description: currentCurse.description,
+				duration: currentCurse.duration,
+			});
+		}
+		return () => {
+			dispatch({ type: CLEAR_AUTHOR });
+			dispatch(getAuthors());
+		};
+	}, [id, courses, dispatch]);
+	///
 
 	const handlerInfoCourse = ({ target: { name, value } }) => {
 		setInfoCourse({ ...infoCourse, [name]: value });
@@ -40,9 +70,7 @@ const CreateCourse = () => {
 	const handlerSubmitForm = (event) => {
 		event.preventDefault();
 
-		const urlAddCourse = 'http://localhost:3000/courses/add';
 		const course = {
-			id: uuidv4(),
 			title: infoCourse.title,
 			description: infoCourse.description,
 			duration: Number(infoCourse.duration),
@@ -56,17 +84,17 @@ const CreateCourse = () => {
 			infoCourse.duration > 0 &&
 			authorsCourse.length > 0
 		) {
-			dispatch(addNewCourse(urlAddCourse, course, token, push));
-		} else {
 			dispatch(isOpenMessage('Please enter all fields'));
+			return null;
 		}
-	};
 
-	const handlerAuthorName = (event) => {
-		setNewAuthor({
-			name: event.target.value,
-			id: uuidv4(),
-		});
+		if (id) {
+			const urlUpdateCourse = `http://localhost:3000/courses/`;
+			dispatch(updateCourse(urlUpdateCourse, id, course, token, push));
+		} else {
+			const urlAddCourse = 'http://localhost:3000/courses/add';
+			dispatch(addNewCourse(urlAddCourse, course, token, push));
+		}
 	};
 
 	const hundlerCreateAuthor = () => {
@@ -75,23 +103,30 @@ const CreateCourse = () => {
 			return;
 		}
 
-		if (authors.find((author) => author.name === newAuthor.name)) {
+		if (
+			authors.find((author) => author.name === newAuthor.name) ||
+			authorsCourse.find((author) => author.name === newAuthor.name)
+		) {
 			dispatch(
 				isOpenMessage("Pay attention, such user's name already existing")
 			);
 			return;
 		}
 
-		dispatch(addAuthor('http://localhost:3000/authors/add', newAuthor, token));
+		dispatch(addAuthor(newAuthor, token));
 
-		setNewAuthor({ name: '', id: '' });
+		setNewAuthor({ name: '' });
+	};
+
+	const handlerDeleteAuthor = (authorId) => {
+		dispatch(deletelAuthor(authorId, token));
 	};
 
 	const handlerAddAuthor = (authorId) => {
 		dispatch(addAuthorToCourse(authorId));
 	};
 
-	const handlerDeleteAuthor = (authorId) => {
+	const handlerCancelAuthor = (authorId) => {
 		dispatch(deleteAuthorToCourse(authorId));
 	};
 
@@ -101,7 +136,7 @@ const CreateCourse = () => {
 				<ul className='message'>
 					{messages.map((message) => {
 						return (
-							<Error
+							<Message
 								key={message.id}
 								id={message.id}
 								text={message.text}
@@ -123,7 +158,11 @@ const CreateCourse = () => {
 						/>
 					</div>
 					<div className='columns large-3 align-self-right align-self-bottom'>
-						<Button>Create course</Button>
+						{id ? (
+							<Button>Udate course</Button>
+						) : (
+							<Button>Create course</Button>
+						)}
 						<Button
 							className='scrumblers'
 							type='button'
@@ -140,6 +179,7 @@ const CreateCourse = () => {
 						<label htmlFor='description'>Description:</label>
 						<textarea
 							id='description'
+							value={infoCourse.description}
 							onChange={handlerInfoCourse}
 							name='description'
 						></textarea>
@@ -154,7 +194,11 @@ const CreateCourse = () => {
 								withLabel={false}
 								id='addAuthor'
 								value={newAuthor.name}
-								onChange={handlerAuthorName}
+								onChange={({ target: { value } }) =>
+									setNewAuthor({
+										name: value,
+									})
+								}
 								placeholder='Enter author name...'
 							/>
 							<Button type='button' onClick={hundlerCreateAuthor}>
@@ -166,7 +210,7 @@ const CreateCourse = () => {
 						<div className='wrpList wrpList--wait'>
 							<h4 className='text-center'>Author</h4>
 							<ul>
-								{authors.length > 0 ? (
+								{!!authors.length ? (
 									authors.map((author) => {
 										return (
 											<li key={author.id}>
@@ -175,7 +219,13 @@ const CreateCourse = () => {
 													type='button'
 													onClick={() => handlerAddAuthor(author.id)}
 												>
-													Add author1
+													Add author
+												</Button>
+												<Button
+													type='button'
+													onClick={() => handlerDeleteAuthor(author.id)}
+												>
+													Delete
 												</Button>
 											</li>
 										);
@@ -195,6 +245,7 @@ const CreateCourse = () => {
 								type='number'
 								id='duration'
 								name='duration'
+								value={infoCourse.duration}
 								onChange={handlerInfoCourse}
 								placeholder='Enter duration in minutes...'
 							/>
@@ -211,16 +262,16 @@ const CreateCourse = () => {
 						<div className='wrpList wrpList--delete'>
 							<h4 className='text-center'>Course author</h4>
 							<ul>
-								{authorsCourse.length > 0 ? (
+								{!!authorsCourse.length ? (
 									authorsCourse.map((author) => {
 										return (
 											<li key={author.id}>
 												<p>{author.name}</p>
 												<Button
 													type='button'
-													onClick={() => handlerDeleteAuthor(author.id)}
+													onClick={() => handlerCancelAuthor(author.id)}
 												>
-													Delete author
+													Cancel author
 												</Button>
 											</li>
 										);

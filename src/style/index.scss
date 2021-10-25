@@ -302,6 +302,9 @@ table {
     &.alert {
       border-left: 4px solid red;
     }
+    &.successful {
+      border-left: 4px solid green;
+    }
   }
 }
 
@@ -328,4 +331,17 @@ form label::first-letter {
 }
 .search-input {
   min-width: 200px;
+}
+.update-button {
+  margin: 0 0 0 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 2px solid lightblue;
+    cursor: pointer;
+    line-height: 1;
+    color: black
 }
