@@ -1,14 +1,16 @@
+import { clearAuthorList, getAuthorsInfo } from '../../utils/utils';
 import {
-	ADD_AUTHOR,
-	ADD_AUTHOR_TO_COURSE,
+	APPROVE_AUTHOR_COURSE,
 	CLEAR_AUTHOR,
 	DELETE_AUTHOR_FROM_COURSE,
 	GET_AUTHORS,
+	GET_AUTORS_COURSE,
 } from './actionTypes';
 
 const initialState = {
 	authors: [],
 	authorsCourse: [],
+	idAuthorsCourse: [],
 };
 
 export const authorsReducer = (state = initialState, action) => {
@@ -16,12 +18,7 @@ export const authorsReducer = (state = initialState, action) => {
 		case GET_AUTHORS:
 			return {
 				...state,
-				authors: action.payload,
-			};
-		case ADD_AUTHOR:
-			return {
-				...state,
-				authors: [...state.authors, action.payload],
+				authors: clearAuthorList(action.payload, state.idAuthorsCourse),
 			};
 		case ADD_AUTHOR_TO_COURSE:
 			return {
@@ -31,6 +28,7 @@ export const authorsReducer = (state = initialState, action) => {
 					...state.authorsCourse,
 					...state.authors.filter((author) => author.id === action.payload),
 				],
+				idAuthorsCourse: [...state.idAuthorsCourse, action.payload],
 			};
 		case DELETE_AUTHOR_FROM_COURSE:
 			return {
@@ -50,6 +48,14 @@ export const authorsReducer = (state = initialState, action) => {
 				...state,
 				authors: [...state.authors, ...state.authorsCourse],
 				authorsCourse: [],
+				idAuthorsCourse: [],
+			};
+		case GET_AUTORS_COURSE:
+			return {
+				...state,
+				authors: clearAuthorList(state.authors, action.payload),
+				authorsCourse: [...getAuthorsInfo(state.authors, action.payload)],
+				idAuthorsCourse: action.payload,
 			};
 		default:
 			return state;

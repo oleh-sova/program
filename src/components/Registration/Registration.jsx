@@ -7,6 +7,7 @@ import useValidate from '../../utils/customHooks/useValidate';
 import Button from '../UI/Button/Button';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
+import Message from '../UI/Message/Message';
 
 const Registration = () => {
 	const { push } = useHistory();
@@ -39,7 +40,7 @@ const Registration = () => {
 				<ul className='message'>
 					{messages.map((message) => {
 						return (
-							<Error
+							<Message
 								key={message.id}
 								id={message.id}
 								text={message.text}

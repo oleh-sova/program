@@ -3,7 +3,6 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 const PrivateRoute = ({ children, isAuthenticated, location, ...props }) => {
-	console.log(props, 'private');
 	return (
 		<Route {...props}>
 			{isAuthenticated ? (

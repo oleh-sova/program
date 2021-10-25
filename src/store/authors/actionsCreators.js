@@ -1,17 +1,23 @@
+import { getDataFetch } from '../../utils/API/api';
+import { isOpenMessage } from '../message/actionsCreators';
 import {
-	ADD_AUTHOR,
-	ADD_AUTHOR_TO_COURSE,
-	CLEAR_AUTHOR,
-	DELETE_AUTHOR_FROM_COURSE,
+	APPROVE_AUTHOR_COURSE,
+	DISAPPROVE_AUTHOR_COURSE,
 	GET_AUTHORS,
+	GET_AUTORS_COURSE,
 } from './actionTypes';
 
 export const getAuthors = (data) => ({ type: GET_AUTHORS, payload: data });
 
-export const addAuthor = (authorData) => ({
-	type: ADD_AUTHOR,
-	payload: authorData,
-});
+export const addAuthor = (authorData, token = null) => {
+	return (dispatch) => {
+		getDataFetch('http://localhost:3000/authors/add', authorData, token)
+			.then(({ successful }) => successful && dispatch(getAuthors()))
+			.catch((error) =>
+				dispatch(isOpenMessage('Something is wrong, try later ...!!!'))
+			);
+	};
+};
 
 export const addAuthorToCourse = (authorId) => {
 	return {
@@ -27,6 +33,30 @@ export const deleteAuthorToCourse = (authorId) => {
 	};
 };
 
-export const clearAuthorCourse = () => ({
-	type: CLEAR_AUTHOR,
+export const getAuthorsCourse = (authorsId) => ({
+	type: GET_AUTORS_COURSE,
+	payload: authorsId,
 });
+
+export const deletelAuthor = (authorsId, token) => {
+	return async (dispatch) => {
+		try {
+			const response = await fetch(
+				`http://localhost:3000/authors/${authorsId}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: token,
+					},
+				}
+			);
+			const { successful } = await response.json();
+			if (successful) {
+				dispatch(getAuthors());
+				dispatch(isOpenMessage('Author was deleted!', 'successful'));
+			}
+		} catch (error) {
+			dispatch(isOpenMessage('Something is wrong, try later ...!!!'));
+		}
+	};
+};

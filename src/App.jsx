@@ -2,12 +2,16 @@ import { Suspense } from 'react';
 import { lazy } from 'react';
 
 import { useSelector } from 'react-redux';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import {
+	Switch,
+	Route,
+	useHistory,
+	BrowserRouter as Router,
+} from 'react-router-dom';
 
 import Header from './components/Header/Header.jsx';
 import Loader from './components/UI/Loader/Loader';
 import PrivateRoute from './routes/PrivateRoute';
-import ProtectedRoutes from './routes/ProtectedRoutes';
 import PublicRoute from './routes/PublicRoute';
 import { getAuthors } from './store/authors/actionsCreators';
 import { getCourses } from './store/courses/actionsCreators';
@@ -20,10 +24,15 @@ const Registration = lazy(() =>
 const NoFoundComponent = lazy(() =>
 	import('./components/NoFoundComponent/NoFoundComponent')
 );
+const Courses = lazy(() => import('./components/Courses/Courses.jsx'));
+const CreateCourse = lazy(() =>
+	import('./components/CreateCourse/CreateCourse.jsx')
+);
+const CourseInfo = lazy(() => import('./components/CourseInfo/CourseInfo.jsx'));
 
 const App = () => {
 	const {
-		user: { token: isAuthenticated },
+		user: { isAuth: isAuthenticated },
 	} = useSelector((state) => state);
 
 	// API get all information
@@ -35,28 +44,50 @@ const App = () => {
 
 	return (
 		<div className='App'>
-			<Header />
-			<Switch>
-				<Route exact path='/'>
-					<Redirect to='/login' />
-				</Route>
-				<Route exact path='/courses'>
-					<Courses />
-				</Route>
-
-				<Route path={'/courses/add'}>
-					<CreateCourse />
-				</Route>
-				<Route path={'/courses/:id'}>
-					<CourseInfo />
-				</Route>
-				<Route path='/login'>
-					<Login />
-				</Route>
-				<Route path='/registration'>
-					<Registration />
-				</Route>
-			</Switch>
+			<Router>
+				<Header />
+				<Suspense fallback={<Loader />}>
+					<Switch>
+						<PublicRoute path='/login' isAuthenticated={isAuthenticated}>
+							<Login />
+						</PublicRoute>
+						<PublicRoute path='/registration' isAuthenticated={isAuthenticated}>
+							<Registration />
+						</PublicRoute>
+						<PrivateRoute
+							exact
+							path='/courses'
+							isAuthenticated={isAuthenticated}
+						>
+							<Courses />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/add'
+							isAuthenticated={isAuthenticated}
+						>
+							<CreateCourse />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/:id'
+							isAuthenticated={isAuthenticated}
+						>
+							<CourseInfo />
+						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/courses/update/:id'
+							isAuthenticated={isAuthenticated}
+						>
+							<CreateCourse />
+						</PrivateRoute>
+						<Route path='*'>
+							<NoFoundComponent />
+						</Route>
+					</Switch>
+				</Suspense>
+			</Router>
 		</div>
 	);
 };

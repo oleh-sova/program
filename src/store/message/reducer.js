@@ -17,7 +17,7 @@ export const messageReduser = (state = initialState, action) => {
 				message: {
 					id: action.payload.id,
 					text: action.payload.text,
-					statusError: action.payload.statusError,
+					statusMessage: action.payload.statusMessage,
 				},
 			};
 		case MESSAGE_DELETE:

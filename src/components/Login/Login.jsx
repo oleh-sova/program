@@ -1,16 +1,16 @@
 import { React } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { userLogin } from '../../store/user/actionsCreators.js';
 import useValidate from '../../utils/customHooks/useValidate.js';
 import Button from '../UI/Button/Button';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
+import Message from '../UI/Message/Message';
 
 const Login = () => {
-	const { push } = useHistory();
 	const dispatch = useDispatch();
 	const {
 		message: { messages },
@@ -25,7 +25,7 @@ const Login = () => {
 			email: email.value,
 			password: password.value,
 		};
-		dispatch(userLogin('http://localhost:3000/login', userData, push));
+		dispatch(userLogin('http://localhost:3000/login', userData));
 	};
 
 	return (
@@ -34,7 +34,7 @@ const Login = () => {
 				<ul className='message'>
 					{messages.map((message) => {
 						return (
-							<Error
+							<Message
 								key={message.id}
 								id={message.id}
 								text={message.text}

@@ -2,7 +2,7 @@ import React from 'react';
 
 import useHideMessage from '../../../utils/customHooks/useHideMessage';
 
-const Error = ({ id, text, statusMessage = 'alert' }) => {
+const Message = ({ id, text, statusMessage }) => {
 	useHideMessage(id);
 
 	return (
@@ -12,4 +12,4 @@ const Error = ({ id, text, statusMessage = 'alert' }) => {
 	);
 };
 
-export default Error;
+export default Message;
