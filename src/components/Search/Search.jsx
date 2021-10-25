@@ -1,30 +1,35 @@
-import { useRef } from 'react';
+import PropTypes from 'prop-types';
 
-function Search(props) {
-	const { searchCB } = props;
-	const valueInput = useRef(null);
+import Button from '../UI/Button/Button';
+import Input from '../UI/Input/Input';
 
+function Search({ getSearchQuery, searchQuery }) {
 	const handlerSubmit = (event) => {
 		event.preventDefault();
-		!valueInput.current.value && alert('Please, enter something for the query');
+		searchQuery && getSearchQuery(searchQuery);
 	};
+
 	const handlerInput = (event) => {
-		searchCB(event.target.value);
+		getSearchQuery(event.target.value);
 	};
 
 	return (
 		<div className='search'>
 			<form onSubmit={handlerSubmit}>
-				<input
-					type='text'
-					ref={valueInput}
+				<Input
+					value={searchQuery}
 					onChange={handlerInput}
 					placeholder='Enter course name or id...'
 				/>
-				<button type='submit'>Search</button>
+				<Button>Search</Button>
 			</form>
 		</div>
 	);
 }
+
+Search.propTypes = {
+	searchQuery: PropTypes.string,
+	getSearchQuery: PropTypes.func,
+};
 
 export default Search;

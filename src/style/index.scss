@@ -21,6 +21,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+.btn-g1 {
+  color: black;
+  border: 2px solid coral;
+  display: block;
+  cursor: pointer;
+  line-height: 39px;
+  padding: 0 20px;
+  text-align: center;
+  &:hover {
+     color: black
+  }
+}
 .empty {
   text-align: center;
   font-size: 25px;
@@ -82,6 +94,9 @@ button {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    div:not(:last-child) {
+      margin-bottom: 5px;
+    }
     button {
       margin-top: 20px;
       align-self: center;
@@ -173,4 +188,66 @@ button {
       }
     }
   }
+}
+
+.section-loyout {
+  height: calc(100vh - 120px);
+  padding: 20px;
+  margin: 20px 0;
+  border: 2px solid cadetblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  h1 {
+    font-size: 30px;
+  }
+  form {
+    width: 40%;
+    input {
+      border: 2px solid coral;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+    }
+    p {
+      a {
+        color: coral;
+      }
+    }
+  }
+}
+
+.scrumblers {
+  border: none;
+  margin-bottom: 30px;
+  text-decoration: underline;
+  color: coral
+}
+
+table {
+  td:first-child {
+    font-weight: 700;
+  }
+}
+
+.successful {
+  border: 2px solid green;
+  padding:  5px 20px;
+  margin-bottom: 20px;
+}
+.error {
+  border: 2px solid red;
+  padding:  5px 20px;
+  margin-bottom: 20px;
+}
+
+.access_dn {
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid grey;
+  padding: 20px;
 }

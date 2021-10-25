@@ -1,46 +1,48 @@
+import { useState, useMemo } from 'react';
+
+import PropTypes from 'prop-types';
+import { useRouteMatch, Link } from 'react-router-dom';
+
 import CourseCard from '../CourseCard/CourseCard';
 import Search from '../Search/Search';
-import { useState } from 'react';
 
-function Courses(props) {
-	const { infoCourses, infoAuthor, showCB, filterTime } = props;
-	const [courses, setCourses] = useState(infoCourses);
+function Courses({ authorsList, coursesList }) {
+	const { path } = useRouteMatch();
+	const [searchQuery, setSearchQuery] = useState('');
 
-	const searchCB = (value) => {
-		const searchString = value.trim().toLowerCase();
-
-		let filterCourses = infoCourses.filter((item) => {
-			return (
-				item.title.toLowerCase().match(searchString) ||
-				item.id.toLowerCase().match(searchString)
+	const sortedCourses = useMemo(() => {
+		if (searchQuery) {
+			return coursesList.filter(
+				(course) =>
+					course.title.toLowerCase().match(searchQuery) ||
+					course.id.toLowerCase().match(searchQuery)
 			);
-		});
-		if (value) {
-			setCourses(filterCourses);
-		} else {
-			setCourses(infoCourses);
 		}
-	};
+		return coursesList;
+	}, [searchQuery, coursesList]);
+
 	return (
 		<section className='courses'>
 			<div className='row'>
-				<div className='columns large-10'>
-					<Search searchCB={searchCB} />
+				<div className='columns large-9'>
+					<Search
+						getSearchQuery={(searchString) => setSearchQuery(searchString)}
+						searchQuery={searchQuery}
+					/>
 				</div>
-				<div className='columns large-2'>
-					<button className='btn' onClick={() => showCB(false)}>
+				<div className='columns large-3'>
+					<Link to={`${path}/add`} className='btn-g1'>
 						Add new course
-					</button>
+					</Link>
 				</div>
 			</div>
-			{courses.length >= 1 ? (
-				courses.map((item) => {
+			{sortedCourses.length > 0 ? (
+				sortedCourses.map((course) => {
 					return (
 						<CourseCard
-							key={item.id}
-							value={item}
-							infoAuthor={infoAuthor}
-							filterTime={filterTime}
+							key={course.id}
+							courseInfo={course}
+							authorsList={authorsList}
 						/>
 					);
 				})
@@ -50,5 +52,10 @@ function Courses(props) {
 		</section>
 	);
 }
+
+Courses.propTypes = {
+	authorsList: PropTypes.array,
+	coursesList: PropTypes.array,
+};
 
 export default Courses;

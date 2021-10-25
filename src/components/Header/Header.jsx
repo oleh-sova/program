@@ -1,7 +1,19 @@
-import Logo from '../Logo/Logo';
-import Button from '../Button/Button';
+import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 
-function Header() {
+import Logo from '../Logo/Logo';
+import Button from '../UI/Button/Button';
+
+function Header({ userName, updateUserName }) {
+	const router = useHistory();
+
+	const handlerLogout = () => {
+		updateUserName('');
+		localStorage.removeItem('userToken');
+		localStorage.removeItem('role');
+		router.push('/login');
+	};
+
 	return (
 		<>
 			<header className='header'>
@@ -11,8 +23,12 @@ function Header() {
 					</div>
 					<div className='columns shrink'>
 						<div className='navigation'>
-							<span>Oleh</span>
-							<Button buttonName='Logout' />
+							<span>{userName}</span>
+							{userName && (
+								<Button type='button' onClick={handlerLogout}>
+									Logout
+								</Button>
+							)}
 						</div>
 					</div>
 				</div>
@@ -20,5 +36,10 @@ function Header() {
 		</>
 	);
 }
+
+Header.propTypes = {
+	userName: PropTypes.string,
+	updateUserName: PropTypes.func,
+};
 
 export default Header;

@@ -1,99 +1,139 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-function CreateCourse(props) {
-	const { authorsList, AddCourse, showCB, updateAuthor, filterTime } = props;
+import { getFormatedTime, FetchSend } from '../../utils/utils.js';
+import Button from '../UI/Button/Button';
+import Error from '../UI/Error/Error';
+import Input from '../UI/Input/Input';
 
-	const [clone, setClone] = useState(authorsList);
-	const [localAuthor, setLocalAuthor] = useState({ id: '', name: '' });
-	const [info, setInfo] = useState({
+const CreateCourse = ({
+	authorsList,
+	updateComponent,
+	messageForm,
+	updateMessageForm,
+}) => {
+	const router = useHistory();
+	const [authorsListClone, setAuthorsListClone] = useState([]);
+	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
+	const [authorsCourse, setAuthorsCourse] = useState([]);
+
+	const [infoCourse, setInfoCourse] = useState({
 		title: '',
 		description: '',
 		duration: 0,
 	});
-	const [authorCourse, setAuthorCourse] = useState([]);
-	const handlerSubmit = (event) => {
+
+	useEffect(() => {
+		setAuthorsListClone(authorsList);
+	}, [authorsList]);
+
+	const handlerInfoCourse = ({ target: { name, value } }) => {
+		setInfoCourse({ ...infoCourse, [name]: value });
+	};
+
+	const handlerCreateCourse = (event) => {
 		event.preventDefault();
 		if (
-			info.title &&
-			info.description &&
-			info.duration > 0 &&
-			authorCourse.length > 0 &&
-			clone[0].name
+			infoCourse.title &&
+			infoCourse.description &&
+			infoCourse.duration > 0 &&
+			authorsCourse.length > 0
 		) {
-			AddCourse({
-				id: uuidv4(),
-				...info,
-				creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
-				authors: authorCourse.map((item) => item.id),
-			});
-			showCB(true);
+			FetchSend(
+				{
+					id: uuidv4(),
+					title: infoCourse.title,
+					description: infoCourse.description,
+					duration: Number(infoCourse.duration),
+					creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
+					authors: authorsCourse.map((item) => item.id),
+				},
+				'http://localhost:3000/courses/add'
+			)
+				.then((response) => {
+					if (response.successful) {
+						updateComponent('add_course');
+						router.push('/courses');
+					} else {
+						updateMessageForm({ message: response.errors, classHtml: 'error' });
+					}
+				})
+				.catch((e) =>
+					updateMessageForm({
+						message: 'Something wrong, please try later',
+						classHtml: 'error',
+					})
+				);
 		} else {
 			alert('Please enter all fields');
 		}
 	};
-	// Add author
-	const createAuthor = (event) => {
-		setLocalAuthor({
-			id: uuidv4(),
+
+	const handlerAuthorName = (event) => {
+		setNewAuthor({
 			name: event.target.value,
+			id: uuidv4(),
 		});
 	};
 
-	const AddAuthorTo = () => {
-		const error = "Pay attention, such user's name already existing";
-		clone.forEach((item) => {
-			console.log(item.name.match(localAuthor.name), 'clone');
+	const hundlerCreateAuthor = () => {
+		if (!newAuthor.name) return alert('Empty field, please enter name');
 
-			if (item.name === localAuthor.name) {
-				alert(error);
-				throw error;
-			}
-		});
-		updateAuthor(localAuthor);
-		setClone([...clone, localAuthor]);
-		setLocalAuthor({ name: '', id: '' });
+		const equalName = authorsListClone.find(
+			(author) => author.name === newAuthor.name
+		);
+		if (equalName)
+			return alert("Pay attention, such user's name already existing");
+
+		FetchSend(newAuthor, 'http://localhost:3000/authors/add').then((data) =>
+			alert('Author added')
+		);
+
+		updateComponent('add_author');
+		setAuthorsListClone([...authorsListClone, newAuthor]);
+		setNewAuthor({ name: '', id: '' });
 	};
-	const handlerInfo = (event) => {
-		const name = event.target.name;
-		const value = event.target.value;
-		setInfo({ ...info, [name]: value });
-	};
-	const approveAuthor = (value) => {
-		const newList = clone.filter((item) => {
+
+	const handlerAddAuthor = (value) => {
+		const newList = authorsListClone.filter((item) => {
 			if (value === item.id) {
-				setAuthorCourse([...authorCourse, item]);
+				setAuthorsCourse([...authorsCourse, item]);
 			}
 			return value !== item.id;
 		});
-		setClone(newList);
+		setAuthorsListClone(newList);
 	};
-	const unApproveAuthor = (value) => {
-		const newList = authorCourse.filter((item) => {
-			value === item.id && setClone([...clone, item]);
+
+	const handlerDeleteAuthor = (value) => {
+		const newList = authorsCourse.filter((item) => {
+			value === item.id && setAuthorsListClone([...authorsListClone, item]);
 			return value !== item.id;
 		});
-		setAuthorCourse([...newList]);
+		setAuthorsCourse([...newList]);
 	};
 	return (
 		<section className='newCourse'>
-			<form action='' onSubmit={handlerSubmit}>
+			<Error
+				messageForm={messageForm.message}
+				classHtml={messageForm.classHtml}
+			/>
+			<form onSubmit={handlerCreateCourse}>
 				<div className='row align-justify expanded'>
 					<div className='columns large-3'>
 						<label htmlFor='title'>Title:</label>
-						<input
-							type='text'
+						<Input
 							id='title'
 							name='title'
-							velue={info.title}
-							onChange={handlerInfo}
+							value={infoCourse.title}
+							onChange={handlerInfoCourse}
 							placeholder='Enter title...'
 						/>
 					</div>
 					<div className='columns large-3 align-self-right align-self-bottom'>
-						<button type='submit' className='btn'>
-							Create course
-						</button>
+						<Button>Create course</Button>
 					</div>
 				</div>
 				<div className='row expanded'>
@@ -101,7 +141,7 @@ function CreateCourse(props) {
 						<label htmlFor='description'>Description:</label>
 						<textarea
 							id='description'
-							onChange={handlerInfo}
+							onChange={handlerInfoCourse}
 							name='description'
 						></textarea>
 					</div>
@@ -111,40 +151,38 @@ function CreateCourse(props) {
 						<div className='wrpList'>
 							<h4 className='text-center'>Add author</h4>
 							<label htmlFor='addAuthor'>Author name</label>
-							<input
-								type='text'
+							<Input
 								id='addAuthor'
-								value={localAuthor.name}
-								onChange={createAuthor}
+								value={newAuthor.name}
+								onChange={handlerAuthorName}
 								placeholder='Enter author name...'
 							/>
-							<button type='button' className='btn' onClick={AddAuthorTo}>
+							<Button type='button' onClick={hundlerCreateAuthor}>
 								Create author
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div className='columns large-6'>
 						<div className='wrpList wrpList--wait'>
 							<h4 className='text-center'>Author</h4>
 							<ul>
-								{clone.length > 0 ? (
-									clone.map((author) => {
+								{authorsListClone.length > 0 ? (
+									authorsListClone.map((author) => {
 										return (
 											<li key={author.id}>
 												<p>{author.name}</p>
-												<button
+												<Button
 													type='button'
-													onClick={() => approveAuthor(author.id)}
+													onClick={() => handlerAddAuthor(author.id)}
 												>
 													Add author
-												</button>
+												</Button>
 											</li>
 										);
 									})
 								) : (
 									<div className='text-center'>Author list is empty</div>
 								)}
-								{}
 							</ul>
 						</div>
 					</div>
@@ -154,16 +192,18 @@ function CreateCourse(props) {
 						<div className='wrpList'>
 							<h4 className='text-center'>Duration</h4>
 							<label htmlFor='addDuratiom'>Duration</label>
-							<input
+							<Input
 								type='number'
 								id='duration'
 								name='duration'
-								onChange={handlerInfo}
+								onChange={handlerInfoCourse}
 								placeholder='Enter duration in minutes...'
 							/>
 							<p>
 								Duration:
-								{info.duration > 0 ? filterTime(info.duration) : ` 00:00 `}
+								{infoCourse.duration > 0
+									? getFormatedTime(infoCourse.duration)
+									: ` 00:00 `}
 								hours
 							</p>
 						</div>
@@ -172,17 +212,17 @@ function CreateCourse(props) {
 						<div className='wrpList wrpList--delete'>
 							<h4 className='text-center'>Course author</h4>
 							<ul>
-								{authorCourse.length > 0 ? (
-									authorCourse.map((item) => {
+								{authorsCourse.length > 0 ? (
+									authorsCourse.map((item) => {
 										return (
 											<li key={item.id}>
 												<p>{item.name}</p>
-												<button
+												<Button
 													type='button'
-													onClick={() => unApproveAuthor(item.id)}
+													onClick={() => handlerDeleteAuthor(item.id)}
 												>
 													Delete author
-												</button>
+												</Button>
 											</li>
 										);
 									})
@@ -198,6 +238,13 @@ function CreateCourse(props) {
 			</form>
 		</section>
 	);
-}
+};
+
+CreateCourse.propTypes = {
+	authorsList: PropTypes.array,
+	updateComponent: PropTypes.func,
+	messageForm: PropTypes.object,
+	updateMessageForm: PropTypes.func,
+};
 
 export default CreateCourse;
