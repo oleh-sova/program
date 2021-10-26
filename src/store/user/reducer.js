@@ -1,4 +1,4 @@
-import { USER_LOGIN, USER_REGISTRATION } from './actionTypes';
+import { USER_LOGIN, USER_LOGOUT } from './actionTypes';
 
 const initialState = {
 	isAuth: false,
@@ -9,15 +9,18 @@ const initialState = {
 
 export const userReducer = (state = initialState, action) => {
 	switch (action.type) {
-		case USER_REGISTRATION:
-			console.log('user register');
-			return state;
 		case USER_LOGIN:
-			const {
-				result: token,
-				user: { email, name },
-			} = action.payload;
+			const { token, email, name } = action.payload;
 			return { ...state, isAuth: true, name, email, token };
+		case USER_LOGOUT: {
+			return {
+				...state,
+				isAuth: false,
+				name: '',
+				email: '',
+				token: '',
+			};
+		}
 		default:
 			return state;
 	}

@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { deleteCourse } from '../../store/courses/actionsCreators.js';
+import { getAuthorsStore, getUserStore } from '../../store/selectors.js';
+import { deleteDataAPI } from '../../utils/API/api.js';
 import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 
@@ -14,10 +16,8 @@ const CourseCard = ({
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 
-	const {
-		authors: { authors: authorsList },
-		user: { token },
-	} = useSelector((state) => state);
+	const { authors: authorsList } = useSelector(getAuthorsStore);
+	const { token } = useSelector(getUserStore);
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
@@ -25,8 +25,13 @@ const CourseCard = ({
 	}, '');
 
 	const handlerDeleteCourse = () => {
-		console.log('Button');
-		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
+		deleteDataAPI('http://localhost:3000/courses/', id, token).then(
+			({ successful }) => {
+				if (successful) {
+					dispatch(deleteCourse(id));
+				}
+			}
+		);
 	};
 
 	const handlerChangeCourse = () => {};

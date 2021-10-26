@@ -1,17 +1,14 @@
 import { React, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { userRegistration } from '../../store/user/actionsCreators.js';
+import { sendDataAPI } from '../../utils/API/api.js';
 import Button from '../UI/Button/Button';
-import Error from '../UI/Error/Error';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
 
 const Registration = () => {
 	const { push } = useHistory();
-	const dispatch = useDispatch();
 
 	const [userData, setUserData] = useState({
 		name: '',
@@ -28,8 +25,8 @@ const Registration = () => {
 
 	const handlerSendData = (event) => {
 		event.preventDefault();
-		dispatch(
-			userRegistration('http://localhost:3000/register', userData, push)
+		sendDataAPI('http://localhost:3000/register', userData).then(
+			({ successful }) => successful && push('/login')
 		);
 	};
 

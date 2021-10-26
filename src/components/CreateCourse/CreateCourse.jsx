@@ -2,15 +2,18 @@ import { useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
 	addAuthor,
 	addAuthorToCourse,
+	clearAuthorCourse,
 	deleteAuthorToCourse,
+	getAuthors,
 } from '../../store/authors/actionsCreators.js';
 import { addNewCourse } from '../../store/courses/actionsCreators.js';
 import { showError } from '../../store/errors/actionsCreators.js';
+import { getAlertStore, getAuthorsStore } from '../../store/selectors.js';
+import { sendDataAPI } from '../../utils/API/api.js';
 import { getFormatedTime } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 import Error from '../UI/Error/Error';
@@ -20,13 +23,12 @@ const CreateCourse = () => {
 	const { push } = useHistory();
 	const dispatch = useDispatch();
 
-	const {
-		user: { token },
-		authors: { authorsCourse, authors },
-		alert: { alert },
-	} = useSelector((state) => state);
+	const { authorsCourse, authors } = useSelector(getAuthorsStore);
+	const { alert } = useSelector(getAlertStore);
 
-	const [newAuthor, setNewAuthor] = useState({ id: '', name: '' });
+	const tokenLocal = localStorage.getItem('token');
+
+	const [newAuthor, setNewAuthor] = useState({ name: '' });
 	const [infoCourse, setInfoCourse] = useState({
 		title: '',
 		description: '',
@@ -42,21 +44,23 @@ const CreateCourse = () => {
 
 		const urlAddCourse = 'http://localhost:3000/courses/add';
 		const course = {
-			id: uuidv4(),
 			title: infoCourse.title,
 			description: infoCourse.description,
 			duration: Number(infoCourse.duration),
 			creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
 			authors: authorsCourse.map((item) => item.id),
 		};
-
-		if (
+		const isFormValid =
 			infoCourse.title &&
 			infoCourse.description &&
 			infoCourse.duration > 0 &&
-			authorsCourse.length > 0
-		) {
-			dispatch(addNewCourse(urlAddCourse, course, token, push));
+			authorsCourse.length > 0;
+		if (isFormValid) {
+			sendDataAPI(urlAddCourse, course, tokenLocal).then((data) => {
+				dispatch(addNewCourse(data.result));
+				dispatch(clearAuthorCourse());
+				push('/courses');
+			});
 		} else {
 			dispatch(showError('Please enter all fields'));
 		}
@@ -65,7 +69,6 @@ const CreateCourse = () => {
 	const handlerAuthorName = (event) => {
 		setNewAuthor({
 			name: event.target.value,
-			id: uuidv4(),
 		});
 	};
 
@@ -79,10 +82,17 @@ const CreateCourse = () => {
 			dispatch(showError("Pay attention, such user's name already existing"));
 			return;
 		}
+		sendDataAPI(
+			'http://localhost:3000/authors/add',
+			newAuthor,
+			tokenLocal
+		).then(({ successful, result }) => {
+			if (successful) {
+				dispatch(addAuthor(result));
+			}
+		});
 
-		dispatch(addAuthor('http://localhost:3000/authors/add', newAuthor, token));
-
-		setNewAuthor({ name: '', id: '' });
+		setNewAuthor({ name: '' });
 	};
 
 	const handlerAddAuthor = (authorId) => {
@@ -92,6 +102,11 @@ const CreateCourse = () => {
 	const handlerDeleteAuthor = (authorId) => {
 		dispatch(deleteAuthorToCourse(authorId));
 	};
+
+	const Test = () => {
+		dispatch(getAuthors());
+	};
+
 	return (
 		<section className='newCourse'>
 			{alert && <Error text={alert} />}
@@ -109,6 +124,9 @@ const CreateCourse = () => {
 					</div>
 					<div className='columns large-3 align-self-right align-self-bottom'>
 						<Button>Create course</Button>
+						<Button type='button ' onClick={Test}>
+							Test
+						</Button>
 					</div>
 				</div>
 				<div className='row expanded'>

@@ -17,8 +17,8 @@ import useFetch from './utils/customHooks/useFetch.js';
 
 const App = () => {
 	// API get all information
-	useFetch(getCourses);
-	useFetch(getAuthors);
+	useFetch('http://localhost:3000/courses/all', getCourses);
+	useFetch('http://localhost:3000/authors/all', getAuthors);
 
 	return (
 		<div className='App'>

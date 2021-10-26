@@ -46,6 +46,7 @@ export const authorsReducer = (state = initialState, action) => {
 		case CLEAR_AUTHOR:
 			return {
 				...state,
+				authors: [...state.authors, ...state.authorsCourse],
 				authorsCourse: [],
 			};
 		default:

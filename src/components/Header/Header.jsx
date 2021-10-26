@@ -1,16 +1,29 @@
-import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { getUserStore } from '../../store/selectors';
+import { userLogout } from '../../store/user/actionsCreators';
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
 
-function Header({ userName, updateUserName }) {
+function Header() {
 	const router = useHistory();
+	const dispatch = useDispatch();
+
+	const tokenLocal = localStorage.getItem('token');
+	const { name, token } = useSelector(getUserStore);
+
+	useEffect(() => {
+		if (tokenLocal) {
+			router.push('/courses');
+		}
+	}, [router, tokenLocal]);
 
 	const handlerLogout = () => {
-		updateUserName('');
-		localStorage.removeItem('userToken');
-		localStorage.removeItem('role');
+		dispatch(userLogout());
+		localStorage.removeItem('token');
 		router.push('/login');
 	};
 
@@ -22,24 +35,19 @@ function Header({ userName, updateUserName }) {
 						<Logo />
 					</div>
 					<div className='columns shrink'>
-						<div className='navigation'>
-							<span>{userName}</span>
-							{userName && (
+						{(tokenLocal || token) && (
+							<div className='navigation'>
+								<span>{name}</span>
 								<Button type='button' onClick={handlerLogout}>
 									Logout
 								</Button>
-							)}
-						</div>
+							</div>
+						)}
 					</div>
 				</div>
 			</header>
 		</>
 	);
 }
-
-Header.propTypes = {
-	userName: PropTypes.string,
-	updateUserName: PropTypes.func,
-};
 
 export default Header;
