@@ -1,8 +1,8 @@
 import {
 	ADD_AUTHOR,
-	APPROVE_AUTHOR_COURSE,
+	ADD_AUTHOR_TO_COURSE,
 	CLEAR_AUTHOR,
-	DISAPPROVE_AUTHOR_COURSE,
+	DELETE_AUTHOR_FROM_COURSE,
 	GET_AUTHORS,
 } from './actionTypes';
 
@@ -15,14 +15,14 @@ export const addAuthor = (authorData) => ({
 
 export const addAuthorToCourse = (authorId) => {
 	return {
-		type: APPROVE_AUTHOR_COURSE,
+		type: ADD_AUTHOR_TO_COURSE,
 		payload: authorId,
 	};
 };
 
 export const deleteAuthorToCourse = (authorId) => {
 	return {
-		type: DISAPPROVE_AUTHOR_COURSE,
+		type: DELETE_AUTHOR_FROM_COURSE,
 		payload: authorId,
 	};
 };

@@ -1,8 +1,8 @@
 import {
 	ADD_AUTHOR,
-	APPROVE_AUTHOR_COURSE,
+	ADD_AUTHOR_TO_COURSE,
 	CLEAR_AUTHOR,
-	DISAPPROVE_AUTHOR_COURSE,
+	DELETE_AUTHOR_FROM_COURSE,
 	GET_AUTHORS,
 } from './actionTypes';
 
@@ -23,16 +23,18 @@ export const authorsReducer = (state = initialState, action) => {
 				...state,
 				authors: [...state.authors, action.payload],
 			};
-		case APPROVE_AUTHOR_COURSE:
+		case ADD_AUTHOR_TO_COURSE:
 			return {
+				...state,
 				authors: state.authors.filter((author) => author.id !== action.payload),
 				authorsCourse: [
 					...state.authorsCourse,
 					...state.authors.filter((author) => author.id === action.payload),
 				],
 			};
-		case DISAPPROVE_AUTHOR_COURSE:
+		case DELETE_AUTHOR_FROM_COURSE:
 			return {
+				...state,
 				authors: [
 					...state.authors,
 					...state.authorsCourse.filter(

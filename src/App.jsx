@@ -1,9 +1,5 @@
-import {
-	Switch,
-	Route,
-	Redirect,
-	BrowserRouter as Router,
-} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import CourseInfo from './components/CourseInfo/CourseInfo';
 import Courses from './components/Courses/Courses.jsx';
@@ -20,32 +16,33 @@ const App = () => {
 	useFetch('http://localhost:3000/courses/all', getCourses);
 	useFetch('http://localhost:3000/authors/all', getAuthors);
 
+	let history = useHistory();
+	console.log(history);
+
 	return (
 		<div className='App'>
-			<Router>
-				<Header />
-				<Switch>
-					<Route exact path='/'>
-						<Redirect to='/login' />
-					</Route>
-					<Route exact path='/courses'>
-						<Courses />
-					</Route>
+			<Header />
+			<Switch>
+				<Route exact path='/'>
+					<Redirect to='/login' />
+				</Route>
+				<Route exact path='/courses'>
+					<Courses />
+				</Route>
 
-					<Route path={'/courses/add'}>
-						<CreateCourse />
-					</Route>
-					<Route path={'/courses/:id'}>
-						<CourseInfo />
-					</Route>
-					<Route path='/login'>
-						<Login />
-					</Route>
-					<Route path='/registration'>
-						<Registration />
-					</Route>
-				</Switch>
-			</Router>
+				<Route path={'/courses/add'}>
+					<CreateCourse />
+				</Route>
+				<Route path={'/courses/:id'}>
+					<CourseInfo />
+				</Route>
+				<Route path='/login'>
+					<Login />
+				</Route>
+				<Route path='/registration'>
+					<Registration />
+				</Route>
+			</Switch>
 		</div>
 	);
 };

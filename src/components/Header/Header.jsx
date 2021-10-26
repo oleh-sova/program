@@ -12,14 +12,14 @@ function Header() {
 	const router = useHistory();
 	const dispatch = useDispatch();
 
-	const tokenLocal = localStorage.getItem('token');
+	const userToken = localStorage.getItem('token');
 	const { name, token } = useSelector(getUserStore);
 
 	useEffect(() => {
-		if (tokenLocal) {
+		if (userToken) {
 			router.push('/courses');
 		}
-	}, [router, tokenLocal]);
+	}, [router, userToken]);
 
 	const handlerLogout = () => {
 		dispatch(userLogout());
@@ -35,7 +35,7 @@ function Header() {
 						<Logo />
 					</div>
 					<div className='columns shrink'>
-						{(tokenLocal || token) && (
+						{(userToken || token) && (
 							<div className='navigation'>
 								<span>{name}</span>
 								<Button type='button' onClick={handlerLogout}>
