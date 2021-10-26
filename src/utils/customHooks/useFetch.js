@@ -1,15 +1,17 @@
 import { useEffect } from 'react';
 
-const useFetch = (url, setState, udatingComponent) => {
+import { useDispatch } from 'react-redux';
+
+import { getDataAPI } from '../API/api';
+
+const useFetch = (url, destinations) => {
+	const dispatch = useDispatch();
 	useEffect(() => {
 		console.log('get info..');
-		const getCourses = async () => {
-			const response = await fetch(url);
-			const data = await response.json();
-			setState(data.result);
-		};
-		getCourses();
-	}, [url, setState, udatingComponent]);
+		getDataAPI(url).then((data) => {
+			dispatch(destinations(data.result));
+		});
+	}, [url, destinations, dispatch]);
 };
 
 export default useFetch;

@@ -1,16 +1,14 @@
 import { React, useState } from 'react';
 
-import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 
-import { FetchSend } from '../../utils/utils.js';
+import { sendDataAPI } from '../../utils/API/api.js';
 import Button from '../UI/Button/Button';
-import Error from '../UI/Error/Error';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
 
-const Registration = ({ messageForm, updateMessageForm }) => {
-	const router = useHistory();
+const Registration = () => {
+	const { push } = useHistory();
 
 	const [userData, setUserData] = useState({
 		name: '',
@@ -27,32 +25,13 @@ const Registration = ({ messageForm, updateMessageForm }) => {
 
 	const handlerSendData = (event) => {
 		event.preventDefault();
-		FetchSend(userData, 'http://localhost:3000/register')
-			.then((dataAnswer) => {
-				if (dataAnswer.successful) {
-					router.push('/login');
-					updateMessageForm({
-						message: '',
-						classHtml: '',
-					});
-				} else {
-					updateMessageForm({ message: dataAnswer.errors, classHtml: 'error' });
-				}
-			})
-			.catch((e) =>
-				updateMessageForm({
-					message: 'Something wrong, please try later',
-					classHtml: 'error',
-				})
-			);
+		sendDataAPI('http://localhost:3000/register', userData).then(
+			({ successful }) => successful && push('/login')
+		);
 	};
 
 	return (
 		<section className='section-loyout'>
-			<Error
-				messageForm={messageForm.message}
-				classHtml={messageForm.classHtml}
-			/>
 			<Form onSubmit={handlerSendData}>
 				<label htmlFor='name'>Name</label>
 				<Input id='name' name='name' onChange={handlerUserData} />
@@ -73,11 +52,6 @@ const Registration = ({ messageForm, updateMessageForm }) => {
 			</Form>
 		</section>
 	);
-};
-
-Registration.propTypes = {
-	messageForm: PropTypes.object,
-	updateMessageForm: PropTypes.func,
 };
 
 export default Registration;
