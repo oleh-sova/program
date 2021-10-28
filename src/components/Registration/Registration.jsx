@@ -3,6 +3,7 @@ import { React } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
+import { getMessageStore } from '../../store/selectors.js';
 import { userRegistration } from '../../store/user/actionsCreators.js';
 import useValidate from '../../utils/customHooks/useValidate';
 import Button from '../UI/Button/Button';
@@ -13,13 +14,12 @@ import Message from '../UI/Message/Message';
 const Registration = () => {
 	const { push } = useHistory();
 	const dispatch = useDispatch();
+
 	const name = useValidate('', { isEmpty: true, minLength: 3 });
 	const email = useValidate('', { isEmpty: true, minLength: 5, isEmail: true });
 	const password = useValidate('', { isEmpty: true, minLength: 6 });
 
-	const {
-		message: { messages },
-	} = useSelector((state) => state);
+	const { messages } = useSelector(getMessageStore);
 
 	const handlerSendData = (event) => {
 		event.preventDefault();
@@ -30,9 +30,7 @@ const Registration = () => {
 			password: password.value,
 		};
 
-		dispatch(
-			userRegistration('http://localhost:3000/register', userData, push)
-		);
+		dispatch(userRegistration(userData, push));
 	};
 
 	return (

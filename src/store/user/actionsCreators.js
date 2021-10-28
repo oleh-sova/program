@@ -1,3 +1,10 @@
+import { deleteDataAPI, getDataAPI, sendDataAPI } from '../../utils/API/api';
+import {
+	logoutURL,
+	userGetRoleURL,
+	userLoginURL,
+	userRegistrationURL,
+} from '../../utils/url';
 import { isOpenMessage } from '../message/actionsCreators';
 import {
 	USER_LOGIN,
@@ -6,26 +13,22 @@ import {
 	USER_ROLE,
 } from './actionTypes';
 
-export const userRegistration = (url, userData, push) => {
+export const userRegistration = (userData, push) => {
 	return async (dispatch) => {
 		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(userData),
-			});
-			const json = await response.json();
+			const { successful, errors } = await sendDataAPI(
+				userRegistrationURL,
+				userData
+			);
 
-			if (json.successful) {
+			if (successful) {
 				dispatch({
 					type: USER_REGISTRATION,
-					payload: json.successful,
+					payload: successful,
 				});
 				push('/login');
 			} else {
-				dispatch(isOpenMessage(json.errors));
+				dispatch(isOpenMessage(errors));
 			}
 		} catch (error) {
 			dispatch(isOpenMessage('Something is wrong, try later ...!!!'));
@@ -33,29 +36,19 @@ export const userRegistration = (url, userData, push) => {
 	};
 };
 
-export const userLogin = (url, userData) => {
-	return async (dispatch, getState) => {
+export const userLogin = (userData) => {
+	return async (dispatch) => {
 		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(userData),
-			});
-			const json = await response.json();
+			const json = await sendDataAPI(userLoginURL, userData);
 
 			if (json.successful) {
 				dispatch({
 					type: USER_LOGIN,
 					payload: json,
 				});
+				localStorage.setItem('token', json.result);
 
-				const {
-					user: { token },
-				} = getState();
-
-				dispatch(userGetRole(token));
+				dispatch(userGetRole(json.result));
 			} else {
 				dispatch(isOpenMessage(json.result));
 			}
@@ -68,18 +61,9 @@ export const userLogin = (url, userData) => {
 export const userGetRole = (token) => {
 	return async (dispatch) => {
 		try {
-			const response = await fetch(`http://localhost:3000/users/me`, {
-				method: 'GET',
-				headers: {
-					Authorization: token,
-				},
-			});
-			const {
-				successful,
-				result: { role },
-			} = await response.json();
+			const { successful, result } = await getDataAPI(userGetRoleURL, token);
 			if (successful) {
-				dispatch({ type: USER_ROLE, payload: role === 'admin' ? true : false });
+				dispatch({ type: USER_ROLE, payload: { ...result, token } });
 			}
 		} catch (error) {
 			dispatch(isOpenMessage('Something is wrong, try later ...!!!'));
@@ -89,14 +73,12 @@ export const userGetRole = (token) => {
 
 export const userLogout = (token) => async (dispatch) => {
 	try {
-		const { ok } = await fetch(`http://localhost:3000/logout`, {
-			method: 'DELETE',
-			headers: {
-				Authorization: token,
-			},
-		});
+		const { ok } = await deleteDataAPI(logoutURL, '', token);
 		if (ok) {
 			dispatch({ type: USER_LOGOUT });
+
+			localStorage.removeItem('token');
+
 			dispatch(isOpenMessage('Logouted !!!', 'successful'));
 		}
 	} catch (error) {

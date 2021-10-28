@@ -1,15 +1,14 @@
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { getUserStore } from '../../store/selectors';
 import { userLogout } from '../../store/user/actionsCreators';
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
 
 function Header() {
 	const dispatch = useDispatch();
-	const {
-		user: { isAuth, token, name = 'Author' },
-	} = useSelector((state) => state);
+
+	const { token, isAuth, name } = useSelector(getUserStore);
 
 	const handlerLogout = () => {
 		dispatch(userLogout(token));
@@ -39,10 +38,5 @@ function Header() {
 		</>
 	);
 }
-
-Header.propTypes = {
-	userName: PropTypes.string,
-	updateUserName: PropTypes.func,
-};
 
 export default Header;

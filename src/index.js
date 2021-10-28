@@ -3,25 +3,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style/index.scss';
 import { Provider } from 'react-redux';
-import { createStore, compose, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 import App from './App.jsx';
 import reportWebVitals from './reportWebVitals';
-import { rootReduser } from './store';
-
-const store = createStore(
-	rootReduser,
-	compose(
-		applyMiddleware(thunk),
-		window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-	)
-);
+import store from './store/store.js';
 
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
+	<Router>
+		<Provider store={store}>
+			<App />
+		</Provider>
+	</Router>,
 	document.getElementById('root')
 );
 
