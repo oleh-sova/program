@@ -18,11 +18,17 @@ export const userReducer = (state = initialState, action) => {
 		case USER_LOGIN:
 			const { token, email, name } = action.payload;
 			return { ...state, isAuth: true, name, email, token };
-		case USER_ROLE:
+		case USER_ROLE: {
+			let { name, email, role, token } = action.payload;
 			return {
 				...state,
-				role: action.payload,
+				isAuth: true,
+				name,
+				email,
+				token,
+				role,
 			};
+		}
 		case USER_LOGOUT:
 			return {
 				...state,

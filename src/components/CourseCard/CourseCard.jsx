@@ -6,7 +6,6 @@ import { Link, useRouteMatch } from 'react-router-dom';
 
 import { deleteCourse } from '../../store/courses/actionsCreators.js';
 import { getAuthorsStore, getUserStore } from '../../store/selectors.js';
-import { deleteDataAPI } from '../../utils/API/api.js';
 import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 
@@ -16,10 +15,10 @@ const CourseCard = ({
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 
-	const {
-		authors: { authors: authorsList },
-		user: { token, role },
-	} = useSelector((state) => state);
+	const { authors: authorsList } = useSelector(getAuthorsStore);
+	const { token, role } = useSelector(getUserStore);
+
+	const isAdmin = role === 'admin' && true;
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
@@ -27,7 +26,7 @@ const CourseCard = ({
 	}, '');
 
 	const handlerDeleteCourse = () => {
-		dispatch(deleteCourse('http://localhost:3000/courses/', id, token));
+		dispatch(deleteCourse(id, token));
 	};
 
 	return (
@@ -54,7 +53,7 @@ const CourseCard = ({
 							<Link to={`${path}/${id}`} className='btn-g1'>
 								Show course
 							</Link>
-							{role && (
+							{isAdmin && (
 								<>
 									<Link to={`${path}/update/${id}`} className='update-button'>
 										<BsPencilFill />

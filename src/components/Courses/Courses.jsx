@@ -3,19 +3,29 @@ import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouteMatch, Link } from 'react-router-dom';
 
-import { getAlertStore, getCoursesStore } from '../../store/selectors';
+import { getAuthors } from '../../store/authors/actionsCreators';
+import { getCourses } from '../../store/courses/actionsCreators';
+import {
+	getCoursesStore,
+	getMessageStore,
+	getUserStore,
+} from '../../store/selectors';
+import useFetch from '../../utils/customHooks/useFetch';
 import CourseCard from '../CourseCard/CourseCard';
 import Search from '../Search/Search';
 import Message from '../UI/Message/Message';
 
 function Courses() {
+	useFetch(getCourses);
+	useFetch(getAuthors);
 	const { path } = useRouteMatch();
 	const [searchQuery, setSearchQuery] = useState('');
-	const {
-		courses: { courses },
-		message: { messages },
-		user: { role },
-	} = useSelector((state) => state);
+
+	const { messages } = useSelector(getMessageStore);
+	const { role } = useSelector(getUserStore);
+	const { courses } = useSelector(getCoursesStore);
+
+	const isAdmin = role === 'admin' && true;
 
 	const sortedCourses = useMemo(() => {
 		if (searchQuery) {
@@ -52,7 +62,7 @@ function Courses() {
 					/>
 				</div>
 				<div className='columns large-3'>
-					{role && (
+					{isAdmin && (
 						<Link to={`${path}/add`} className='btn-g1'>
 							Add new course
 						</Link>

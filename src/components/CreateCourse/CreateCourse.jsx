@@ -8,16 +8,21 @@ import {
 	addAuthorToCourse,
 	deletelAuthor,
 	deleteAuthorToCourse,
-	getAuthors,
 	getAuthorsCourse,
+	clearAuthorsList,
 } from '../../store/authors/actionsCreators.js';
-import { CLEAR_AUTHOR } from '../../store/authors/actionTypes.js';
 import {
 	addNewCourse,
 	updateCourse,
 } from '../../store/courses/actionsCreators.js';
 import { isOpenMessage } from '../../store/message/actionsCreators.js';
-import { sendDataAPI } from '../../utils/API/api.js';
+import {
+	getAuthorsStore,
+	getCoursesStore,
+	getMessageStore,
+	getUserStore,
+	getAuthorsInCourses,
+} from '../../store/selectors.js';
 import { getFormatedTime } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 import Input from '../UI/Input/Input';
@@ -29,12 +34,11 @@ const CreateCourse = () => {
 
 	let { id } = useParams();
 
-	const {
-		courses: { courses },
-		user: { token },
-		authors: { authorsCourse, authors },
-		message: { messages },
-	} = useSelector((state) => state);
+	const { messages } = useSelector(getMessageStore);
+	const { token } = useSelector(getUserStore);
+	const { courses } = useSelector(getCoursesStore);
+	const { authorsCourse, authors } = useSelector(getAuthorsStore);
+	const authorsInCourses = useSelector(getAuthorsInCourses);
 
 	const [newAuthor, setNewAuthor] = useState({ name: '' });
 	const [infoCourse, setInfoCourse] = useState({
@@ -58,8 +62,7 @@ const CreateCourse = () => {
 			});
 		}
 		return () => {
-			dispatch({ type: CLEAR_AUTHOR });
-			dispatch(getAuthors());
+			dispatch(clearAuthorsList());
 		};
 	}, [id, courses, dispatch]);
 	///
@@ -83,23 +86,16 @@ const CreateCourse = () => {
 			infoCourse.description &&
 			infoCourse.duration > 0 &&
 			authorsCourse.length > 0;
-		if (isFormValid) {
-			sendDataAPI(urlAddCourse, course, tokenLocal).then((data) => {
-				dispatch(addNewCourse(data.result));
-				dispatch(clearAuthorCourse());
-				push('/courses');
-			});
-		} else {
+
+		if (!isFormValid) {
 			dispatch(isOpenMessage('Please enter all fields'));
 			return null;
 		}
 
 		if (id) {
-			const urlUpdateCourse = `http://localhost:3000/courses/`;
-			dispatch(updateCourse(urlUpdateCourse, id, course, token, push));
+			dispatch(updateCourse(id, course, token, push));
 		} else {
-			const urlAddCourse = 'http://localhost:3000/courses/add';
-			dispatch(addNewCourse(urlAddCourse, course, token, push));
+			dispatch(addNewCourse(course, token, push));
 		}
 	};
 
@@ -134,6 +130,12 @@ const CreateCourse = () => {
 	};
 
 	const handlerDeleteAuthor = (authorId) => {
+		if (authorsInCourses.includes(authorId)) {
+			dispatch(
+				isOpenMessage('Sorry, but current user already uses in some course')
+			);
+			return null;
+		}
 		dispatch(deletelAuthor(authorId, token));
 	};
 

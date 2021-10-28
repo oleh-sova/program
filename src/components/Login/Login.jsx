@@ -3,6 +3,7 @@ import { React } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import { getMessageStore } from '../../store/selectors.js';
 import { userLogin } from '../../store/user/actionsCreators.js';
 import useValidate from '../../utils/customHooks/useValidate.js';
 import Button from '../UI/Button/Button';
@@ -12,9 +13,8 @@ import Message from '../UI/Message/Message';
 
 const Login = () => {
 	const dispatch = useDispatch();
-	const {
-		message: { messages },
-	} = useSelector((state) => state);
+
+	const { messages } = useSelector(getMessageStore);
 
 	const email = useValidate('', { isEmpty: true, minLength: 5, isEmail: true });
 	const password = useValidate('', { isEmpty: true, minLength: 6 });
@@ -25,7 +25,7 @@ const Login = () => {
 			email: email.value,
 			password: password.value,
 		};
-		dispatch(userLogin('http://localhost:3000/login', userData));
+		dispatch(userLogin(userData));
 	};
 
 	return (
