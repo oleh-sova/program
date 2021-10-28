@@ -114,15 +114,6 @@ const CreateCourse = () => {
 			);
 			return;
 		}
-		sendDataAPI(
-			'http://localhost:3000/authors/add',
-			newAuthor,
-			tokenLocal
-		).then(({ successful, result }) => {
-			if (successful) {
-				dispatch(addAuthor(result));
-			}
-		});
 
 		dispatch(addAuthor(newAuthor, token));
 

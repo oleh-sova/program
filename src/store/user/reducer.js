@@ -16,8 +16,13 @@ const initialState = {
 export const userReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case USER_LOGIN:
-			const { token, email, name } = action.payload;
+			const {
+				result: token,
+				user: { email, name },
+			} = action.payload;
 			return { ...state, isAuth: true, name, email, token };
+		case USER_REGISTRATION:
+			return state;
 		case USER_ROLE: {
 			let { name, email, role, token } = action.payload;
 			return {

@@ -2,7 +2,7 @@ import { Suspense, useEffect } from 'react';
 import { lazy } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 
 import Header from './components/Header/Header.jsx';
 import Loader from './components/UI/Loader/Loader';
@@ -26,15 +26,18 @@ const CourseInfo = lazy(() => import('./components/CourseInfo/CourseInfo.jsx'));
 
 const App = () => {
 	const dispatch = useDispatch();
-
+	const { push } = useHistory();
 	const { isAuth: isAuthenticated } = useSelector(getUserStore);
 
 	useEffect(() => {
 		const userToken = localStorage.getItem('token');
 		if (userToken) {
 			dispatch(userGetRole(userToken));
+			push('/courses');
+		} else {
+			push('/login');
 		}
-	}, [dispatch]);
+	}, [dispatch, push]);
 
 	return (
 		<div className='App'>
