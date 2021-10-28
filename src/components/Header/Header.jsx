@@ -22,16 +22,14 @@ function Header() {
 						<Logo />
 					</div>
 					<div className='columns shrink'>
-						<div className='navigation'>
-							{isAuth && (
-								<>
-									<span>{name}</span>
-									<Button type='button' onClick={handlerLogout}>
-										Logout
-									</Button>
-								</>
-							)}
-						</div>
+						{isAuth && (
+							<div className='navigation'>
+								<span>{name}</span>
+								<Button type='button' onClick={handlerLogout}>
+									Logout
+								</Button>
+							</div>
+						)}
 					</div>
 				</div>
 			</header>

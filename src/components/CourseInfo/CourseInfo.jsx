@@ -61,7 +61,7 @@ const CourseInfo = ({ courses, authorsList }) => {
 	);
 };
 
-// just training, another (old )way in order to derive something from Store
+// just training, another (old) way in order to derive something from Store
 const mapStateToProps = (state) => {
 	return {
 		courses: state.courses.courses,

@@ -12,7 +12,7 @@ export const sendDataAPI = async (url, data, token = null) => {
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
-			Authorization: token,
+			Authorization: token || null,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(data),

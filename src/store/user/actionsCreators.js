@@ -40,7 +40,7 @@ export const userLogin = (userData) => {
 	return async (dispatch) => {
 		try {
 			const json = await sendDataAPI(userLoginURL, userData);
-
+			console.log(json);
 			if (json.successful) {
 				dispatch({
 					type: USER_LOGIN,
@@ -62,6 +62,7 @@ export const userGetRole = (token) => {
 	return async (dispatch) => {
 		try {
 			const { successful, result } = await getDataAPI(userGetRoleURL, token);
+			console.log(successful, 'scs');
 			if (successful) {
 				dispatch({ type: USER_ROLE, payload: { ...result, token } });
 			}

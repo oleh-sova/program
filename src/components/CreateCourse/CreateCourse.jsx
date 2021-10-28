@@ -81,7 +81,6 @@ const CreateCourse = () => {
 			creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
 			authors: authorsCourse.map((item) => item.id),
 		};
-
 		const isFormValid =
 			infoCourse.title &&
 			infoCourse.description &&
@@ -115,7 +114,6 @@ const CreateCourse = () => {
 			);
 			return;
 		}
-
 		dispatch(addAuthor(newAuthor, token));
 
 		setNewAuthor({ name: '' });

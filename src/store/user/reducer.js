@@ -15,15 +15,14 @@ const initialState = {
 
 export const userReducer = (state = initialState, action) => {
 	switch (action.type) {
-		case USER_REGISTRATION:
-			console.log('user register');
-			return state;
 		case USER_LOGIN:
 			const {
 				result: token,
 				user: { email, name },
 			} = action.payload;
 			return { ...state, isAuth: true, name, email, token };
+		case USER_REGISTRATION:
+			return state;
 		case USER_ROLE: {
 			let { name, email, role, token } = action.payload;
 			return {
