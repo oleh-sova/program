@@ -5,7 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { deleteCourse } from '../../store/courses/actionsCreators.js';
-import { getAuthorsStore, getUserStore } from '../../store/selectors.js';
+import {
+	getAuthorsStore,
+	getUserRole,
+	getUserToken,
+} from '../../store/selectors.js';
 import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 
@@ -16,9 +20,10 @@ const CourseCard = ({
 	const dispatch = useDispatch();
 
 	const { authors: authorsList } = useSelector(getAuthorsStore);
-	const { token, role } = useSelector(getUserStore);
+	const token = useSelector(getUserToken);
+	const userRole = useSelector(getUserRole);
 
-	const isAdmin = role === 'admin' && true;
+	const isAdmin = userRole === 'admin';
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);

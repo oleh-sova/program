@@ -8,7 +8,7 @@ import Header from './components/Header/Header.jsx';
 import Loader from './components/UI/Loader/Loader';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
-import { getUserStore } from './store/selectors.js';
+import { getIsAuthUser } from './store/selectors.js';
 import { userGetRole } from './store/user/actionsCreators.js';
 
 const Login = lazy(() => import('./components/Login/Login.jsx'));
@@ -27,7 +27,7 @@ const CourseInfo = lazy(() => import('./components/CourseInfo/CourseInfo.jsx'));
 const App = () => {
 	const dispatch = useDispatch();
 	const { push } = useHistory();
-	const { isAuth: isAuthenticated } = useSelector(getUserStore);
+	const isAuthUser = useSelector(getIsAuthUser);
 
 	useEffect(() => {
 		const userToken = localStorage.getItem('token');
@@ -44,33 +44,25 @@ const App = () => {
 			<Header />
 			<Suspense fallback={<Loader />}>
 				<Switch>
-					<PublicRoute path='/login' isAuthenticated={isAuthenticated}>
+					<PublicRoute path='/login' isAuthenticated={isAuthUser}>
 						<Login />
 					</PublicRoute>
-					<PublicRoute path='/registration' isAuthenticated={isAuthenticated}>
+					<PublicRoute path='/registration' isAuthenticated={isAuthUser}>
 						<Registration />
 					</PublicRoute>
-					<PrivateRoute exact path='/courses' isAuthenticated={isAuthenticated}>
+					<PrivateRoute exact path='/courses' isAuthenticated={isAuthUser}>
 						<Courses />
 					</PrivateRoute>
-					<PrivateRoute
-						exact
-						path='/courses/add'
-						isAuthenticated={isAuthenticated}
-					>
+					<PrivateRoute exact path='/courses/add' isAuthenticated={isAuthUser}>
 						<CreateCourse />
 					</PrivateRoute>
-					<PrivateRoute
-						exact
-						path='/courses/:id'
-						isAuthenticated={isAuthenticated}
-					>
+					<PrivateRoute exact path='/courses/:id' isAuthenticated={isAuthUser}>
 						<CourseInfo />
 					</PrivateRoute>
 					<PrivateRoute
 						exact
 						path='/courses/update/:id'
-						isAuthenticated={isAuthenticated}
+						isAuthenticated={isAuthUser}
 					>
 						<CreateCourse />
 					</PrivateRoute>

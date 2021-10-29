@@ -5,11 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import {
 	addAuthor,
-	addAuthorToCourse,
 	deletelAuthor,
-	deleteAuthorToCourse,
-	getAuthorsCourse,
-	clearAuthorsList,
 } from '../../store/authors/actionsCreators.js';
 import {
 	addNewCourse,
@@ -20,10 +16,14 @@ import {
 	getAuthorsStore,
 	getCoursesStore,
 	getMessageStore,
-	getUserStore,
 	getAuthorsInCourses,
+	getUserToken,
 } from '../../store/selectors.js';
-import { getFormatedTime } from '../../utils/utils.js';
+import {
+	clearAuthors,
+	getFormatedTime,
+	sortAuthors,
+} from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 import Input from '../UI/Input/Input';
 import Message from '../UI/Message/Message';
@@ -32,12 +32,12 @@ const CreateCourse = () => {
 	const { push, goBack } = useHistory();
 	const dispatch = useDispatch();
 
-	let { id } = useParams();
+	const { id } = useParams();
 
 	const { messages } = useSelector(getMessageStore);
-	const { token } = useSelector(getUserStore);
+	const token = useSelector(getUserToken);
 	const { courses } = useSelector(getCoursesStore);
-	const { authorsCourse, authors } = useSelector(getAuthorsStore);
+	const { authors } = useSelector(getAuthorsStore);
 	const authorsInCourses = useSelector(getAuthorsInCourses);
 
 	const [newAuthor, setNewAuthor] = useState({ name: '' });
@@ -46,6 +46,17 @@ const CreateCourse = () => {
 		description: '',
 		duration: 0,
 	});
+	const [authorsList, setAuthorsList] = useState([]);
+	const [authorCourse, setAuthorCourse] = useState([]);
+
+	useEffect(() => {
+		setAuthorsList(
+			clearAuthors(
+				authors,
+				authorCourse.map(({ id }) => id)
+			)
+		);
+	}, [authors, authorCourse]);
 
 	/// update course
 	useEffect(() => {
@@ -54,17 +65,16 @@ const CreateCourse = () => {
 				return course.id === id;
 			});
 
-			dispatch(getAuthorsCourse(currentCurse.authors));
+			const authorsInCourse = sortAuthors(authors, currentCurse.authors);
+
+			setAuthorCourse(authorsInCourse);
 			setInfoCourse({
 				title: currentCurse.title,
 				description: currentCurse.description,
 				duration: currentCurse.duration,
 			});
 		}
-		return () => {
-			dispatch(clearAuthorsList());
-		};
-	}, [id, courses, dispatch]);
+	}, [id, courses, authors]);
 	///
 
 	const handlerInfoCourse = ({ target: { name, value } }) => {
@@ -79,17 +89,16 @@ const CreateCourse = () => {
 			description: infoCourse.description,
 			duration: Number(infoCourse.duration),
 			creationDate: new Intl.DateTimeFormat('en-US').format(new Date()),
-			authors: authorsCourse.map((item) => item.id),
+			authors: authorCourse.map((item) => item.id),
 		};
 		const isFormValid =
 			infoCourse.title &&
 			infoCourse.description &&
 			infoCourse.duration > 0 &&
-			authorsCourse.length > 0;
+			authorCourse.length > 0;
 
 		if (!isFormValid) {
-			dispatch(isOpenMessage('Please enter all fields'));
-			return null;
+			return dispatch(isOpenMessage('Please enter all fields'));
 		}
 
 		if (id) {
@@ -100,19 +109,19 @@ const CreateCourse = () => {
 	};
 
 	const hundlerCreateAuthor = () => {
-		if (!newAuthor.name) {
-			dispatch(isOpenMessage('Empty field, please enter name'));
-			return;
+		const authorName = newAuthor?.name;
+
+		if (!authorName) {
+			return dispatch(isOpenMessage('Empty field, please enter name'));
 		}
 
 		if (
-			authors.find((author) => author.name === newAuthor.name) ||
-			authorsCourse.find((author) => author.name === newAuthor.name)
+			authors.find(({ name }) => name === authorName) ||
+			authorCourse.find(({ name }) => name === authorName)
 		) {
-			dispatch(
+			return dispatch(
 				isOpenMessage("Pay attention, such user's name already existing")
 			);
-			return;
 		}
 
 		dispatch(addAuthor(newAuthor, token));
@@ -122,20 +131,29 @@ const CreateCourse = () => {
 
 	const handlerDeleteAuthor = (authorId) => {
 		if (authorsInCourses.includes(authorId)) {
-			dispatch(
+			return dispatch(
 				isOpenMessage('Sorry, but current user already uses in some course')
 			);
-			return null;
 		}
 		dispatch(deletelAuthor(authorId, token));
 	};
 
 	const handlerAddAuthor = (authorId) => {
-		dispatch(addAuthorToCourse(authorId));
+		const newList = authorsList.filter((author) => {
+			if (authorId === author.id) {
+				setAuthorCourse([...authorCourse, author]);
+			}
+			return authorId !== author.id;
+		});
+		setAuthorsList(newList);
 	};
 
 	const handlerCancelAuthor = (authorId) => {
-		dispatch(deleteAuthorToCourse(authorId));
+		const newList = authorCourse.filter((author) => {
+			authorId === author.id && setAuthorsList([...authorsList, author]);
+			return authorId !== author.id;
+		});
+		setAuthorCourse(newList);
 	};
 
 	return (
@@ -174,9 +192,7 @@ const CreateCourse = () => {
 						<Button
 							className='scrumblers'
 							type='button'
-							onClick={() => {
-								goBack();
-							}}
+							onClick={() => goBack()}
 						>
 							Back to courses
 						</Button>
@@ -218,8 +234,8 @@ const CreateCourse = () => {
 						<div className='wrpList wrpList--wait'>
 							<h4 className='text-center'>Author</h4>
 							<ul>
-								{!!authors.length ? (
-									authors.map((author) => {
+								{!!authorsList.length ? (
+									authorsList.map((author) => {
 										return (
 											<li key={author.id}>
 												<p>{author.name}</p>
@@ -270,14 +286,14 @@ const CreateCourse = () => {
 						<div className='wrpList wrpList--delete'>
 							<h4 className='text-center'>Course author</h4>
 							<ul>
-								{!!authorsCourse.length ? (
-									authorsCourse.map((author) => {
+								{!!authorCourse.length ? (
+									authorCourse.map(({ id, name }) => {
 										return (
-											<li key={author.id}>
-												<p>{author.name}</p>
+											<li key={id}>
+												<p>{name}</p>
 												<Button
 													type='button'
-													onClick={() => handlerCancelAuthor(author.id)}
+													onClick={() => handlerCancelAuthor(id)}
 												>
 													Cancel author
 												</Button>

@@ -8,7 +8,7 @@ import { getCourses } from '../../store/courses/actionsCreators';
 import {
 	getCoursesStore,
 	getMessageStore,
-	getUserStore,
+	getUserRole,
 } from '../../store/selectors';
 import useFetch from '../../utils/customHooks/useFetch';
 import CourseCard from '../CourseCard/CourseCard';
@@ -22,10 +22,10 @@ function Courses() {
 	const [searchQuery, setSearchQuery] = useState('');
 
 	const { messages } = useSelector(getMessageStore);
-	const { role } = useSelector(getUserStore);
+	const userRole = useSelector(getUserRole);
 	const { courses } = useSelector(getCoursesStore);
 
-	const isAdmin = role === 'admin' && true;
+	const isAdmin = userRole === 'admin';
 
 	const sortedCourses = useMemo(() => {
 		if (searchQuery) {

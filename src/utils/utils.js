@@ -24,15 +24,12 @@ export const getAuthorsName = (authorsList, authors) => {
 	}, '');
 };
 
-export const getAuthorsInfo = (authorsList, authors) => {
-	return authorsList.reduce((author, nextAuthor) => {
-		authors.includes(nextAuthor.id) && (author = [...author, nextAuthor]);
-		return author;
+export const clearAuthors = (authorsList, authors) =>
+	authorsList.reduce((author, nextAuthor) => {
+		return !authors.includes(nextAuthor.id) ? [...author, nextAuthor] : author;
 	}, []);
-};
 
-export const clearAuthorList = (authorsList, authors) =>
-	authorsList.reduce((result, author) => {
-		!authors.includes(author.id) && (result = [...result, author]);
-		return result;
+export const sortAuthors = (authorsList, authors) =>
+	authorsList.reduce((author, nextAuthor) => {
+		return authors.includes(nextAuthor.id) ? [...author, nextAuthor] : author;
 	}, []);

@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getUserStore } from '../../store/selectors';
+import {
+	getIsAuthUser,
+	getUserName,
+	getUserToken,
+} from '../../store/selectors';
 import { userLogout } from '../../store/user/actionsCreators';
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
@@ -8,7 +12,9 @@ import Button from '../UI/Button/Button';
 function Header() {
 	const dispatch = useDispatch();
 
-	const { token, isAuth, name } = useSelector(getUserStore);
+	const isAuthUser = useSelector(getIsAuthUser);
+	const token = useSelector(getUserToken);
+	const name = useSelector(getUserName);
 
 	const handlerLogout = () => {
 		dispatch(userLogout(token));
@@ -23,7 +29,7 @@ function Header() {
 					</div>
 					<div className='columns shrink'>
 						<div className='navigation'>
-							{isAuth && (
+							{isAuthUser && (
 								<>
 									<span>{name}</span>
 									<Button type='button' onClick={handlerLogout}>

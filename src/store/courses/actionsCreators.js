@@ -4,15 +4,18 @@ import {
 	getDataAPI,
 	sendDataAPI,
 } from '../../utils/API/api';
-import { addNewCourseURL, allCoursesURL, coursesURL } from '../../utils/url';
-import { clearAuthorsList } from '../authors/actionsCreators';
+import {
+	ADD_NEW_COURSE_URL,
+	ALL_COURSES_URL,
+	COURSES_URL,
+} from '../../utils/url';
 import { isOpenMessage } from '../message/actionsCreators';
 import { ADD_COURSE, DELETE_COURSE, GET_COURSES } from './actionTypes';
 
 export function getCourses() {
 	return async (dispatch) => {
 		try {
-			const { result } = await getDataAPI(allCoursesURL);
+			const { result } = await getDataAPI(ALL_COURSES_URL);
 			dispatch({ type: GET_COURSES, payload: result });
 		} catch (error) {
 			dispatch(isOpenMessage('Something is wrong, try later ...!!!'));
@@ -24,12 +27,11 @@ export function addNewCourse(courseData, token, push) {
 	return async (dispatch) => {
 		try {
 			const { successful, result } = await sendDataAPI(
-				addNewCourseURL,
+				ADD_NEW_COURSE_URL,
 				courseData,
 				token
 			);
 			if (successful) {
-				dispatch(clearAuthorsList());
 				dispatch({ type: ADD_COURSE, payload: result });
 				push('/courses');
 			}
@@ -42,7 +44,7 @@ export function addNewCourse(courseData, token, push) {
 export function deleteCourse(courseId, token) {
 	return async (dispatch) => {
 		try {
-			const responce = await deleteDataAPI(coursesURL, courseId, token);
+			const responce = await deleteDataAPI(COURSES_URL + courseId, token);
 			const { successful, message } = await responce.json();
 			if (successful) {
 				dispatch({ type: DELETE_COURSE, payload: courseId });
@@ -60,8 +62,7 @@ export function updateCourse(courseId, dataCourse, token, push) {
 	return async (dispatch) => {
 		try {
 			const { successful } = await changeDataAPI(
-				coursesURL,
-				courseId,
+				COURSES_URL + courseId,
 				dataCourse,
 				token
 			);

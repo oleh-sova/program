@@ -1,9 +1,9 @@
 import { deleteDataAPI, getDataAPI, sendDataAPI } from '../../utils/API/api';
 import {
-	logoutURL,
-	userGetRoleURL,
-	userLoginURL,
-	userRegistrationURL,
+	LOGOUT_URL,
+	USER_GET_ROLE_URL,
+	USER_LOGIN_URL,
+	USER_REGISTRATION_URL,
 } from '../../utils/url';
 import { isOpenMessage } from '../message/actionsCreators';
 import {
@@ -17,7 +17,7 @@ export const userRegistration = (userData, push) => {
 	return async (dispatch) => {
 		try {
 			const { successful, errors } = await sendDataAPI(
-				userRegistrationURL,
+				USER_REGISTRATION_URL,
 				userData
 			);
 
@@ -39,7 +39,7 @@ export const userRegistration = (userData, push) => {
 export const userLogin = (userData) => {
 	return async (dispatch) => {
 		try {
-			const json = await sendDataAPI(userLoginURL, userData);
+			const json = await sendDataAPI(USER_LOGIN_URL, userData);
 
 			if (json.successful) {
 				dispatch({
@@ -61,7 +61,7 @@ export const userLogin = (userData) => {
 export const userGetRole = (token) => {
 	return async (dispatch) => {
 		try {
-			const { successful, result } = await getDataAPI(userGetRoleURL, token);
+			const { successful, result } = await getDataAPI(USER_GET_ROLE_URL, token);
 			if (successful) {
 				dispatch({ type: USER_ROLE, payload: { ...result, token } });
 			}
@@ -73,7 +73,7 @@ export const userGetRole = (token) => {
 
 export const userLogout = (token) => async (dispatch) => {
 	try {
-		const { ok } = await deleteDataAPI(logoutURL, '', token);
+		const { ok } = await deleteDataAPI(LOGOUT_URL, token);
 		if (ok) {
 			dispatch({ type: USER_LOGOUT });
 
