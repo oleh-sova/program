@@ -1,30 +1,23 @@
-import { useEffect } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
-import { getUserStore } from '../../store/selectors';
+import {
+	getIsAuthUser,
+	getUserName,
+	getUserToken,
+} from '../../store/selectors';
 import { userLogout } from '../../store/user/actionsCreators';
 import Logo from '../Logo/Logo';
 import Button from '../UI/Button/Button';
 
 function Header() {
-	const router = useHistory();
 	const dispatch = useDispatch();
 
-	const userToken = localStorage.getItem('token');
-	const { name, token } = useSelector(getUserStore);
-
-	useEffect(() => {
-		if (userToken) {
-			router.push('/courses');
-		}
-	}, [router, userToken]);
+	const isAuthUser = useSelector(getIsAuthUser);
+	const token = useSelector(getUserToken);
+	const name = useSelector(getUserName);
 
 	const handlerLogout = () => {
-		dispatch(userLogout());
-		localStorage.removeItem('token');
-		router.push('/login');
+		dispatch(userLogout(token));
 	};
 
 	return (
@@ -35,14 +28,16 @@ function Header() {
 						<Logo />
 					</div>
 					<div className='columns shrink'>
-						{(userToken || token) && (
-							<div className='navigation'>
-								<span>{name}</span>
-								<Button type='button' onClick={handlerLogout}>
-									Logout
-								</Button>
-							</div>
-						)}
+						<div className='navigation'>
+							{isAuthUser && (
+								<>
+									<span>{name}</span>
+									<Button type='button' onClick={handlerLogout}>
+										Logout
+									</Button>
+								</>
+							)}
+						</div>
 					</div>
 				</div>
 			</header>

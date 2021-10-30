@@ -30,7 +30,7 @@
     "eslint": "eslint --ext .js --ext .jsx src",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src",
     "prepare": "husky install",
-    "prepublish": "npm run eslint:fix && npm run test"
+    "prepublish": "npm run eslint:fix"
   },
   "eslintConfig": {
     "extends": [

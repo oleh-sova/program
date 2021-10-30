@@ -3,17 +3,29 @@ import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouteMatch, Link } from 'react-router-dom';
 
-import { getAlertStore, getCoursesStore } from '../../store/selectors';
+import { getAuthors } from '../../store/authors/actionsCreators';
+import { getCourses } from '../../store/courses/actionsCreators';
+import {
+	getCoursesStore,
+	getMessageStore,
+	getUserRole,
+} from '../../store/selectors';
+import useFetch from '../../utils/customHooks/useFetch';
 import CourseCard from '../CourseCard/CourseCard';
 import Search from '../Search/Search';
-import Error from '../UI/Error/Error';
+import Message from '../UI/Message/Message';
 
 function Courses() {
+	useFetch(getCourses);
+	useFetch(getAuthors);
 	const { path } = useRouteMatch();
 	const [searchQuery, setSearchQuery] = useState('');
 
+	const { messages } = useSelector(getMessageStore);
+	const userRole = useSelector(getUserRole);
 	const { courses } = useSelector(getCoursesStore);
-	const { alert } = useSelector(getAlertStore);
+
+	const isAdmin = userRole === 'admin';
 
 	const sortedCourses = useMemo(() => {
 		if (searchQuery) {
@@ -28,7 +40,20 @@ function Courses() {
 
 	return (
 		<section className='courses'>
-			{alert && <Error text={alert} classes='success' />}
+			{!!messages.length && (
+				<ul className='message'>
+					{messages.map((message) => {
+						return (
+							<Message
+								key={message.id}
+								id={message.id}
+								text={message.text}
+								statusMessage={message.statusMessage}
+							/>
+						);
+					})}
+				</ul>
+			)}
 			<div className='row'>
 				<div className='columns large-9'>
 					<Search
@@ -37,12 +62,14 @@ function Courses() {
 					/>
 				</div>
 				<div className='columns large-3'>
-					<Link to={`${path}/add`} className='btn-g1'>
-						Add new course
-					</Link>
+					{isAdmin && (
+						<Link to={`${path}/add`} className='btn-g1'>
+							Add new course
+						</Link>
+					)}
 				</div>
 			</div>
-			{sortedCourses.length > 0 ? (
+			{!!sortedCourses.length ? (
 				sortedCourses.map((course) => {
 					return <CourseCard key={course.id} courseInfo={course} />;
 				})

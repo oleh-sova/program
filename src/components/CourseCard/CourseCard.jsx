@@ -5,8 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { deleteCourse } from '../../store/courses/actionsCreators.js';
-import { getAuthorsStore, getUserStore } from '../../store/selectors.js';
-import { deleteDataAPI } from '../../utils/API/api.js';
+import {
+	getAuthorsStore,
+	getUserRole,
+	getUserToken,
+} from '../../store/selectors.js';
 import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 
@@ -17,7 +20,10 @@ const CourseCard = ({
 	const dispatch = useDispatch();
 
 	const { authors: authorsList } = useSelector(getAuthorsStore);
-	const { token } = useSelector(getUserStore);
+	const token = useSelector(getUserToken);
+	const userRole = useSelector(getUserRole);
+
+	const isAdmin = userRole === 'admin';
 
 	const authorsName = authorsList.reduce((author, nextAuthor) => {
 		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
@@ -25,16 +31,9 @@ const CourseCard = ({
 	}, '');
 
 	const handlerDeleteCourse = () => {
-		deleteDataAPI('http://localhost:3000/courses/', id, token).then(
-			({ successful }) => {
-				if (successful) {
-					dispatch(deleteCourse(id));
-				}
-			}
-		);
+		dispatch(deleteCourse(id, token));
 	};
 
-	const handlerChangeCourse = () => {};
 	return (
 		<div className='courseCard'>
 			<div className='row'>
@@ -59,12 +58,16 @@ const CourseCard = ({
 							<Link to={`${path}/${id}`} className='btn-g1'>
 								Show course
 							</Link>
-							<Button handler={handlerDeleteCourse}>
-								<AiTwotoneDelete />
-							</Button>
-							<Button handler={handlerChangeCourse}>
-								<BsPencilFill />
-							</Button>
+							{isAdmin && (
+								<>
+									<Link to={`${path}/update/${id}`} className='update-button'>
+										<BsPencilFill />
+									</Link>
+									<Button handler={handlerDeleteCourse}>
+										<AiTwotoneDelete />
+									</Button>
+								</>
+							)}
 						</div>
 					</div>
 				</div>

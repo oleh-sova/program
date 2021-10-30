@@ -1,48 +1,76 @@
-import { useHistory } from 'react-router-dom';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Suspense, useEffect } from 'react';
+import { lazy } from 'react';
 
-import CourseInfo from './components/CourseInfo/CourseInfo';
-import Courses from './components/Courses/Courses.jsx';
-import CreateCourse from './components/CreateCourse/CreateCourse.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { Switch, Route, useHistory } from 'react-router-dom';
+
 import Header from './components/Header/Header.jsx';
-import Login from './components/Login/Login.jsx';
-import Registration from './components/Registration/Registration.jsx';
-import { getAuthors } from './store/authors/actionsCreators';
-import { getCourses } from './store/courses/actionsCreators';
-import useFetch from './utils/customHooks/useFetch.js';
+import Loader from './components/UI/Loader/Loader';
+import PrivateRoute from './routes/PrivateRoute';
+import PublicRoute from './routes/PublicRoute';
+import { getIsAuthUser } from './store/selectors.js';
+import { userGetRole } from './store/user/actionsCreators.js';
+
+const Login = lazy(() => import('./components/Login/Login.jsx'));
+const Registration = lazy(() =>
+	import('./components/Registration/Registration.jsx')
+);
+const NoFoundComponent = lazy(() =>
+	import('./components/NoFoundComponent/NoFoundComponent')
+);
+const Courses = lazy(() => import('./components/Courses/Courses.jsx'));
+const CreateCourse = lazy(() =>
+	import('./components/CreateCourse/CreateCourse.jsx')
+);
+const CourseInfo = lazy(() => import('./components/CourseInfo/CourseInfo.jsx'));
 
 const App = () => {
-	// API get all information
-	useFetch('http://localhost:3000/courses/all', getCourses);
-	useFetch('http://localhost:3000/authors/all', getAuthors);
+	const dispatch = useDispatch();
+	const { push } = useHistory();
+	const isAuthUser = useSelector(getIsAuthUser);
 
-	let history = useHistory();
-	console.log(history);
+	useEffect(() => {
+		const userToken = localStorage.getItem('token');
+		if (userToken) {
+			dispatch(userGetRole(userToken));
+			push('/courses');
+		} else {
+			push('/login');
+		}
+	}, [dispatch, push]);
 
 	return (
 		<div className='App'>
 			<Header />
-			<Switch>
-				<Route exact path='/'>
-					<Redirect to='/login' />
-				</Route>
-				<Route exact path='/courses'>
-					<Courses />
-				</Route>
-
-				<Route path={'/courses/add'}>
-					<CreateCourse />
-				</Route>
-				<Route path={'/courses/:id'}>
-					<CourseInfo />
-				</Route>
-				<Route path='/login'>
-					<Login />
-				</Route>
-				<Route path='/registration'>
-					<Registration />
-				</Route>
-			</Switch>
+			<Suspense fallback={<Loader />}>
+				<Switch>
+					<PublicRoute path='/login' isAuthenticated={isAuthUser}>
+						<Login />
+					</PublicRoute>
+					<PublicRoute path='/registration' isAuthenticated={isAuthUser}>
+						<Registration />
+					</PublicRoute>
+					<PrivateRoute exact path='/courses' isAuthenticated={isAuthUser}>
+						<Courses />
+					</PrivateRoute>
+					<PrivateRoute exact path='/courses/add' isAuthenticated={isAuthUser}>
+						<CreateCourse />
+					</PrivateRoute>
+					<PrivateRoute exact path='/courses/:id' isAuthenticated={isAuthUser}>
+						<CourseInfo />
+					</PrivateRoute>
+					<PrivateRoute
+						exact
+						path='/courses/update/:id'
+						isAuthenticated={isAuthUser}
+					>
+						<CreateCourse />
+					</PrivateRoute>
+					<Route path='*'>
+						<NoFoundComponent />
+					</Route>
+				</Switch>
+			</Suspense>
 		</div>
 	);
 };

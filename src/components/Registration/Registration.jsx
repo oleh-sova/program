@@ -1,50 +1,84 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { sendDataAPI } from '../../utils/API/api.js';
+import { getMessageStore } from '../../store/selectors.js';
+import { userRegistration } from '../../store/user/actionsCreators.js';
+import useValidate from '../../utils/customHooks/useValidate';
 import Button from '../UI/Button/Button';
 import Form from '../UI/Form/Form';
 import Input from '../UI/Input/Input';
+import Message from '../UI/Message/Message';
 
 const Registration = () => {
 	const { push } = useHistory();
+	const dispatch = useDispatch();
 
-	const [userData, setUserData] = useState({
-		name: '',
-		email: '',
-		password: '',
-	});
+	const name = useValidate('', { isEmpty: true, minLength: 3 });
+	const email = useValidate('', { isEmpty: true, minLength: 5, isEmail: true });
+	const password = useValidate('', { isEmpty: true, minLength: 6 });
 
-	const handlerUserData = (event) => {
-		setUserData({
-			...userData,
-			[event.target.name]: event.target.value,
-		});
-	};
+	const { messages } = useSelector(getMessageStore);
 
 	const handlerSendData = (event) => {
 		event.preventDefault();
-		sendDataAPI('http://localhost:3000/register', userData).then(
-			({ successful }) => successful && push('/login')
-		);
+
+		const userData = {
+			name: name.value,
+			email: email.value,
+			password: password.value,
+		};
+
+		dispatch(userRegistration(userData, push));
 	};
 
 	return (
 		<section className='section-loyout'>
+			{messages.length > 0 && (
+				<ul className='message'>
+					{messages.map((message) => {
+						return (
+							<Message
+								key={message.id}
+								id={message.id}
+								text={message.text}
+								statusMessage={message.statusMessage}
+							/>
+						);
+					})}
+				</ul>
+			)}
 			<Form onSubmit={handlerSendData}>
-				<label htmlFor='name'>Name</label>
-				<Input id='name' name='name' onChange={handlerUserData} />
-				<label htmlFor='email'>Email</label>
+				<Input
+					id='name'
+					name='name'
+					onBlur={name.onBlur}
+					onChange={name.onChange}
+					settings={name}
+				/>
 				<Input
 					type='email'
 					id='email'
 					name='email'
-					onChange={handlerUserData}
+					onBlur={email.onBlur}
+					onChange={email.onChange}
+					settings={email}
 				/>
-				<label htmlFor='password'>Password</label>
-				<Input id='password' name='password' onChange={handlerUserData} />
-				<Button>Registration</Button>
+				<Input
+					id='password'
+					name='password'
+					onBlur={password.onBlur}
+					onChange={password.onChange}
+					settings={password}
+				/>
+				<Button
+					disabled={
+						name.buttonValid || password.buttonValid || email.buttonValid
+					}
+				>
+					Registration
+				</Button>
 				<p>
 					If you have an account you can
 					<Link to={'/login'}> Login!</Link>

@@ -1,2 +1,4 @@
 export const USER_LOGIN = 'USER/USER_LOGIN';
+export const USER_REGISTRATION = 'USER/USER_REGISTRATION';
+export const USER_ROLE = 'USER/USER_ROLE';
 export const USER_LOGOUT = 'USER/USER_LOGOUT';
