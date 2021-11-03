@@ -1,6 +1,8 @@
 const initialState = {
 	user: {
 		token: 'token test',
+		isAuth: true,
+		name: 'Test Name',
 		role: 'admin',
 	},
 	message: {

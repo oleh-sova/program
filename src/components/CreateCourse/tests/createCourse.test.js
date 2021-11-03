@@ -13,6 +13,8 @@ import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
 import CreateCourse from '../CreateCourse';
+// eslint-disable-next-line import/order
+import initialState from '../../../mocks/initilState';
 
 const buildComponent = (store) => {
 	const history = createMemoryHistory();
@@ -35,49 +37,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('testing CreateCourse component', () => {
-	const mockedState = {
-		user: {
-			token: 'token test',
-			role: 'admin',
-		},
-		message: {
-			messages: [],
-			message: {
-				id: '',
-				text: '',
-				statusMessage: '',
-			},
-		},
-		courses: {
-			courses: [
-				{
-					title: 'Test title',
-					description: 'Test description',
-					duration: 100,
-					authors: ['id1'],
-					creationDate: '26/10/2021',
-					id: 'course-id-1',
-				},
-				{
-					title: 'Test title2',
-					description: 'Test description2',
-					duration: 110,
-					authors: ['id1'],
-					creationDate: '26/10/2021',
-					id: 'course-id-2',
-				},
-			],
-		},
-		authors: {
-			authors: [
-				{ id: 'id1', name: 'Author' },
-				{ id: 'id2', name: 'Author2' },
-			],
-		},
-	};
-
 	const mockedStore = {
-		getState: () => mockedState,
+		getState: () => initialState,
 		dispatch: jest.fn(),
 		subscribe: jest.fn(),
 	};

@@ -11,6 +11,7 @@ import '@testing-library/jest-dom';
 // eslint-disable-next-line import/order
 import { Provider } from 'react-redux';
 
+import initialState from '../../../mocks/initilState';
 import Courses from '../Courses';
 
 const buildComponent = (store) => {
@@ -26,58 +27,24 @@ const buildComponent = (store) => {
 };
 
 describe('testing Course component', () => {
-	const mockedState = {
-		user: {
-			token: '',
-			role: 'admin',
-		},
-		message: {
-			messages: [],
-			message: {
-				id: '',
-				text: '',
-				statusMessage: '',
-			},
-		},
-		courses: {
-			courses: [
-				{
-					title: 'Test title',
-					description: 'Test description',
-					duration: 100,
-					authors: ['id1'],
-					creationDate: '26/10/2021',
-					id: 'course-id-1',
-				},
-				{
-					title: 'Test title2',
-					description: 'Test description2',
-					duration: 110,
-					authors: ['id1'],
-					creationDate: '26/10/2021',
-					id: 'course-id-2',
-				},
-			],
-		},
-		authors: { authors: [{ id: 'id1', name: 'Author' }] },
-	};
-
 	const mockedStore = {
-		getState: () => mockedState,
+		getState: () => initialState,
 		dispatch: jest.fn(),
 		subscribe: jest.fn(),
 	};
+
+	const getCoursesStore = mockedStore.getState().courses.courses;
 
 	test('Should display amoun of CourseCard equal courses array', () => {
 		const { container } = buildComponent(mockedStore);
 		const amountCourseCard = container.querySelectorAll(
 			"div[class='courseCard']"
 		);
-		expect(mockedState.courses.courses.length).toEqual(amountCourseCard.length);
+		expect(getCoursesStore.length).toEqual(amountCourseCard.length);
 	});
 
 	test('Should display empty container', () => {
-		mockedState.courses.courses = [];
+		initialState.courses.courses = [];
 		const { container } = buildComponent(mockedStore);
 		const amountCourseCard = container.querySelectorAll(
 			"div[class='courseCard']"

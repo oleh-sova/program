@@ -11,6 +11,7 @@ import '@testing-library/jest-dom';
 // eslint-disable-next-line import/order
 import { Provider } from 'react-redux';
 
+import initialState from '../../../mocks/initilState';
 import { authorNameFilter, getFormatedTime } from '../../../utils/utils';
 import CourseCard from '../CourseCard';
 
@@ -32,19 +33,13 @@ describe('testing CourseCard component', () => {
 		/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
 	const regExpTime = /(\d{2}):(\d{2}) hours/g;
 
-	const mockedState = {
-		user: {
-			token: '',
-			role: '',
-		},
-		authors: { authors: [{ id: 'id1', name: 'Author' }] },
-	};
-
 	const mockedStore = {
-		getState: () => mockedState,
+		getState: () => initialState,
 		dispatch: jest.fn(),
 		subscribe: jest.fn(),
 	};
+
+	const getAuthorsStore = mockedStore.getState().authors.authors;
 
 	beforeEach(() => {
 		props = {
@@ -88,9 +83,9 @@ describe('testing CourseCard component', () => {
 	test('Should display authors list course', () => {
 		const { container } = buildComponent(mockedStore, props);
 		const author = container.querySelector('[data-testid="authors"]');
-		expect(
-			authorNameFilter(mockedState.authors.authors, props.courseInfo.authors)
-		).toEqual('Author; ');
+		expect(authorNameFilter(getAuthorsStore, props.courseInfo.authors)).toEqual(
+			'Author; '
+		);
 		expect(author).toBeInTheDocument();
 	});
 

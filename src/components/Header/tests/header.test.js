@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
+import initialState from '../../../mocks/initilState';
 import Header from '../Header';
 
 const buildComponent = (props) =>
@@ -16,14 +17,8 @@ const buildComponent = (props) =>
 	);
 
 describe('testing header', () => {
-	const mockedState = {
-		user: {
-			isAuth: true,
-			name: 'Test Name',
-		},
-	};
 	const mockedStore = {
-		getState: () => mockedState,
+		getState: () => initialState,
 		subscribe: jest.fn(),
 		dispatch: jest.fn(),
 	};
