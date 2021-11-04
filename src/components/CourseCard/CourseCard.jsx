@@ -47,7 +47,6 @@ const CourseCard = ({
 						<div className='auth'>
 							<span>Author:</span>{' '}
 							<span data-testid='authors'>
-								{' '}
 								{authorNameFilter(authorsList, authors)}
 							</span>
 						</div>
