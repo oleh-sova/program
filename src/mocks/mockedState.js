@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
 	user: {
 		token: 'token test',
 		isAuth: true,
@@ -41,4 +41,8 @@ const initialState = {
 	},
 };
 
-export default initialState;
+export const mockedState = {
+	getState: () => initialState,
+	dispatch: jest.fn(),
+	subscribe: jest.fn(),
+};

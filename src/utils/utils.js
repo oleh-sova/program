@@ -40,3 +40,8 @@ export const sortAuthors = (authorsList, authors) =>
 	authorsList.reduce((author, nextAuthor) => {
 		return authors.includes(nextAuthor.id) ? [...author, nextAuthor] : author;
 	}, []);
+
+export const getRenderContainer = (DOM) => {
+	const { container } = DOM;
+	return container;
+};

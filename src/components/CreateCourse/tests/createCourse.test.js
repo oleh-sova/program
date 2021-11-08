@@ -12,9 +12,10 @@ import '@testing-library/jest-dom';
 // eslint-disable-next-line import/order
 import { Provider } from 'react-redux';
 
+import { getRenderContainer } from '../../../utils/utils';
 import CreateCourse from '../CreateCourse';
 // eslint-disable-next-line import/order
-import initialState from '../../../mocks/initilState';
+import { mockedState } from '../../../mocks/mockedState';
 
 const buildComponent = (store) => {
 	const history = createMemoryHistory();
@@ -37,34 +38,32 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('testing CreateCourse component', () => {
-	const mockedStore = {
-		getState: () => initialState,
-		dispatch: jest.fn(),
-		subscribe: jest.fn(),
-	};
+	let container;
+
+	beforeEach(() => {
+		container = getRenderContainer(buildComponent(mockedState));
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
 	test('Should show authors lists', () => {
-		const { container } = buildComponent(mockedStore);
-
 		const amountAuthorsCourse = container.querySelectorAll(
 			"[class='author-course']"
 		);
-		expect(amountAuthorsCourse.length).toBe(1);
+		expect(amountAuthorsCourse).toHaveLength(1);
 	});
 
 	test('Should show authors course lists', () => {
-		const { container } = buildComponent(mockedStore);
-
 		const amountAuthorsInCourse = container.querySelectorAll(
 			"[class='author-inCourse']"
 		);
-		expect(amountAuthorsInCourse.length).toBe(1);
+		expect(amountAuthorsInCourse).toHaveLength(1);
 	});
 
 	test('Should call dispatch the action of addAuthor', () => {
 		actions.addAuthor = jest.fn();
-
-		const { container } = buildComponent(mockedStore);
 
 		const input = container.querySelector("input[id='addAuthor']");
 		fireEvent.change(input, { target: { value: 'Test Name' } });
@@ -77,12 +76,10 @@ describe('testing CreateCourse component', () => {
 		fireEvent.click(button);
 
 		expect(actions.addAuthor).toHaveBeenCalled();
-		expect(mockedStore.dispatch.mock.calls.length).toBe(1);
+		expect(mockedState.dispatch.mock.calls).toHaveLength(1);
 	});
 
 	test('Should add author when click button', async () => {
-		const { container } = buildComponent(mockedStore);
-
 		const buttonAdd = container.querySelectorAll(
 			"[data-testid='event-addAuthor']"
 		);
@@ -94,13 +91,11 @@ describe('testing CreateCourse component', () => {
 		);
 		const authorsCourse = container.querySelectorAll("[class='author-course']");
 
-		expect(authorsInCourse.length).toEqual(2);
-		expect(authorsCourse.length).toEqual(0);
+		expect(authorsInCourse).toHaveLength(2);
+		expect(authorsCourse).toHaveLength(0);
 	});
 
 	test('Should cancel author when click button', async () => {
-		const { container } = buildComponent(mockedStore);
-
 		const buttonAdd = container.querySelectorAll(
 			"[data-testid='event-addAuthor']"
 		);
@@ -116,6 +111,6 @@ describe('testing CreateCourse component', () => {
 			"[class='author-inCourse']"
 		);
 
-		expect(authorsInCourse.length).toEqual(1);
+		expect(authorsInCourse).toHaveLength(1);
 	});
 });

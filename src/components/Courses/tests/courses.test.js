@@ -11,12 +11,13 @@ import '@testing-library/jest-dom';
 // eslint-disable-next-line import/order
 import { Provider } from 'react-redux';
 
-import initialState from '../../../mocks/initilState';
+import { initialState, mockedState } from '../../../mocks/mockedState';
+import { getRenderContainer } from '../../../utils/utils';
 import Courses from '../Courses';
 
-const buildComponent = (store) => {
-	const history = createMemoryHistory();
+const history = createMemoryHistory();
 
+const buildComponent = (store) => {
 	return render(
 		<Router history={history}>
 			<Provider store={store}>
@@ -27,42 +28,34 @@ const buildComponent = (store) => {
 };
 
 describe('testing Course component', () => {
-	const mockedStore = {
-		getState: () => initialState,
-		dispatch: jest.fn(),
-		subscribe: jest.fn(),
-	};
+	let container;
+	const getCoursesStore = mockedState.getState().courses.courses;
 
-	const getCoursesStore = mockedStore.getState().courses.courses;
+	beforeEach(() => {
+		container = getRenderContainer(buildComponent(mockedState));
+	});
 
 	test('Should display amoun of CourseCard equal courses array', () => {
-		const { container } = buildComponent(mockedStore);
 		const amountCourseCard = container.querySelectorAll(
 			"div[class='courseCard']"
 		);
-		expect(getCoursesStore.length).toEqual(amountCourseCard.length);
+		expect(getCoursesStore).toHaveLength(amountCourseCard.length);
 	});
 
 	test('Should display empty container', () => {
 		initialState.courses.courses = [];
-		const { container } = buildComponent(mockedStore);
+
+		const { container } = buildComponent(mockedState);
+
 		const amountCourseCard = container.querySelectorAll(
 			"div[class='courseCard']"
 		);
 		const emptyContainer = container.querySelector("div[class='empty']");
-		expect(amountCourseCard.length).toEqual(0);
+		expect(amountCourseCard).toHaveLength(0);
 		expect(emptyContainer).toBeVisible();
 	});
 
 	test('CreateCourse should be show after a click on a button', () => {
-		const history = createMemoryHistory();
-		const { container } = render(
-			<Router history={history}>
-				<Provider store={mockedStore}>
-					<Courses />
-				</Provider>
-			</Router>
-		);
 		const button = container.querySelector('[data-testid="addNewCourse"]');
 		fireEvent.click(button);
 		expect(history.location.pathname).toBe('/courses/add');

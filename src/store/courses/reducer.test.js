@@ -1,4 +1,4 @@
-import initialState from '../../mocks/initilState';
+import { initialState } from '../../mocks/mockedState';
 import { ADD_COURSE, GET_COURSES } from './actionTypes';
 import { coursesReducer } from './reducer';
 
@@ -13,7 +13,7 @@ describe('Test of courses reducer ', () => {
 			type: GET_COURSES,
 			payload: initialState.courses.courses,
 		});
-		expect(result.courses.length).toEqual(2);
+		expect(result.courses).toHaveLength(2);
 	});
 
 	test('Should handle ADD_COURSE and returns result state', () => {
@@ -30,6 +30,6 @@ describe('Test of courses reducer ', () => {
 			type: ADD_COURSE,
 			payload: newCourse,
 		});
-		expect(result.courses.length).toEqual(3);
+		expect(result.courses).toHaveLength(3);
 	});
 });
