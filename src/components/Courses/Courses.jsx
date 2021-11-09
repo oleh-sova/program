@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 
 import { useSelector } from 'react-redux';
-import { useRouteMatch, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { getAuthors } from '../../store/authors/actionsCreators';
 import { getCourses } from '../../store/courses/actionsCreators';
@@ -18,7 +18,6 @@ import Message from '../UI/Message/Message';
 function Courses() {
 	useFetch(getCourses);
 	useFetch(getAuthors);
-	const { path } = useRouteMatch();
 	const [searchQuery, setSearchQuery] = useState('');
 
 	const { messages } = useSelector(getMessageStore);
@@ -63,7 +62,11 @@ function Courses() {
 				</div>
 				<div className='columns large-3'>
 					{isAdmin && (
-						<Link to={`${path}/add`} className='btn-g1'>
+						<Link
+							to={'courses/add'}
+							className='btn-g1'
+							data-testid='addNewCourse'
+						>
 							Add new course
 						</Link>
 					)}

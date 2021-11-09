@@ -10,7 +10,11 @@ import {
 	getUserRole,
 	getUserToken,
 } from '../../store/selectors.js';
-import { getFormatedTime, addEllipsis } from '../../utils/utils.js';
+import {
+	getFormatedTime,
+	addEllipsis,
+	authorNameFilter,
+} from '../../utils/utils.js';
 import Button from '../UI/Button/Button';
 
 const CourseCard = ({
@@ -19,16 +23,11 @@ const CourseCard = ({
 	const { path } = useRouteMatch();
 	const dispatch = useDispatch();
 
-	const { authors: authorsList } = useSelector(getAuthorsStore);
+	const authorsList = useSelector(getAuthorsStore);
 	const token = useSelector(getUserToken);
 	const userRole = useSelector(getUserRole);
 
 	const isAdmin = userRole === 'admin';
-
-	const authorsName = authorsList.reduce((author, nextAuthor) => {
-		authors.includes(nextAuthor.id) && (author += `${nextAuthor.name}; `);
-		return author;
-	}, '');
 
 	const handlerDeleteCourse = () => {
 		dispatch(deleteCourse(id, token));
@@ -46,13 +45,17 @@ const CourseCard = ({
 				<div className='columns large-4'>
 					<div className='courseCard__info'>
 						<div className='auth'>
-							<span>Author:</span> {authorsName}
+							<span>Author:</span>{' '}
+							<span data-testid='authors'>
+								{authorNameFilter(authorsList, authors)}
+							</span>
 						</div>
 						<div>
 							<span>Duration:</span> {getFormatedTime(duration)} hours
 						</div>
 						<div>
-							<span>Created:</span> {creationDate}
+							<span>Created:</span>{' '}
+							<span data-testid='date'>{creationDate}</span>
 						</div>
 						<div className='wrapper-btn'>
 							<Link to={`${path}/${id}`} className='btn-g1'>

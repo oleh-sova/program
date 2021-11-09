@@ -37,7 +37,7 @@ const CreateCourse = () => {
 	const { messages } = useSelector(getMessageStore);
 	const token = useSelector(getUserToken);
 	const { courses } = useSelector(getCoursesStore);
-	const { authors } = useSelector(getAuthorsStore);
+	const authors = useSelector(getAuthorsStore);
 	const authorsInCourses = useSelector(getAuthorsInCourses);
 
 	const [newAuthor, setNewAuthor] = useState({ name: '' });
@@ -46,8 +46,9 @@ const CreateCourse = () => {
 		description: '',
 		duration: 0,
 	});
-	const [authorsList, setAuthorsList] = useState([]);
+
 	const [authorCourse, setAuthorCourse] = useState([]);
+	const [authorsList, setAuthorsList] = useState([]);
 
 	useEffect(() => {
 		setAuthorsList(
@@ -157,7 +158,7 @@ const CreateCourse = () => {
 	};
 
 	return (
-		<section className='newCourse'>
+		<section className='newCourse' data-testid='newCourse'>
 			{messages.length > 0 && (
 				<ul className='message'>
 					{messages.map((message) => {
@@ -225,7 +226,11 @@ const CreateCourse = () => {
 								}
 								placeholder='Enter author name...'
 							/>
-							<Button type='button' onClick={hundlerCreateAuthor}>
+							<Button
+								type='button'
+								onClick={hundlerCreateAuthor}
+								data-testid='event-createAuthor'
+							>
 								Create author
 							</Button>
 						</div>
@@ -237,9 +242,10 @@ const CreateCourse = () => {
 								{!!authorsList.length ? (
 									authorsList.map((author) => {
 										return (
-											<li key={author.id}>
+											<li key={author.id} className='author-course'>
 												<p>{author.name}</p>
 												<Button
+													data-testid='event-addAuthor'
 													type='button'
 													onClick={() => handlerAddAuthor(author.id)}
 												>
@@ -289,11 +295,12 @@ const CreateCourse = () => {
 								{!!authorCourse.length ? (
 									authorCourse.map(({ id, name }) => {
 										return (
-											<li key={id}>
+											<li key={id} className='author-inCourse'>
 												<p>{name}</p>
 												<Button
 													type='button'
 													onClick={() => handlerCancelAuthor(id)}
+													data-testid='event-cancelAuthor'
 												>
 													Cancel author
 												</Button>

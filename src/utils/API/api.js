@@ -21,7 +21,6 @@ export const sendDataAPI = async (url, data, token = null) => {
 };
 
 export const deleteDataAPI = async (url, token = null) => {
-	console.log(url);
 	const response = await fetch(url, {
 		method: 'DELETE',
 		headers: {

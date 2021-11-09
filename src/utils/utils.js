@@ -4,7 +4,7 @@ export const getFormatedTime = (m) => {
 
 	const checkTime = (n) => (n < 10 ? `0${n}` : `${n}`);
 
-	return ` ${checkTime(hour)}:${checkTime(mins)} hours`;
+	return `${checkTime(hour)}:${checkTime(mins)} hours`;
 };
 
 export const addEllipsis = (text, amountSymbols) => {
@@ -16,6 +16,13 @@ export const addEllipsis = (text, amountSymbols) => {
 	}
 	return text;
 };
+
+export const authorNameFilter = (authorsList, authors) =>
+	authorsList.reduce((author, nextAuthor) => {
+		return authors.includes(nextAuthor.id)
+			? (author += `${nextAuthor.name}; `)
+			: author;
+	}, '');
 
 export const getAuthorsName = (authorsList, authors) => {
 	return authorsList.reduce((author, nextAuthor) => {
@@ -33,3 +40,8 @@ export const sortAuthors = (authorsList, authors) =>
 	authorsList.reduce((author, nextAuthor) => {
 		return authors.includes(nextAuthor.id) ? [...author, nextAuthor] : author;
 	}, []);
+
+export const getRenderContainer = (DOM) => {
+	const { container } = DOM;
+	return container;
+};

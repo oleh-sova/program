@@ -7,9 +7,10 @@
     "@emotion/styled": "^11.3.0",
     "@mui/material": "^5.0.3",
     "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "fetch-mock": "^9.11.0",
     "foundation-sites": "^6.7.3",
+    "jest": "26.6.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -30,7 +31,7 @@
     "eslint": "eslint --ext .js --ext .jsx src",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src",
     "prepare": "husky install",
-    "prepublish": "npm run eslint:fix"
+    "prepublish": "npm run eslint:fix && npm run test"
   },
   "eslintConfig": {
     "extends": [
@@ -51,6 +52,10 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "^7.0.2",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
+    "enzyme": "^3.11.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
@@ -60,7 +65,9 @@
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^7.0.2",
+    "node-fetch": "^3.0.0",
     "node-sass": "^6.0.1",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "redux-mock-store": "^1.5.4"
   }
 }
